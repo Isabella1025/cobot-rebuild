@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cobot - Chat</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/chat.css">
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Header -->
+        <header class="chat-header">
+            <div class="header-left">
+                <button class="btn-back" id="backBtn" title="Back to Groups">
+                    ← Back
+                </button>
+                <div class="group-info">
+                    <h2 class="group-name" id="groupName">Loading...</h2>
+                    <span class="member-count" id="memberCount">0 members</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="online-indicator">
+                    <span class="status-dot"></span>
+                    <span id="onlineCount">0 online</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Messages Area -->
+        <main class="messages-area" id="messagesArea">
+            <div class="messages-loading">Loading messages...</div>
+        </main>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator" style="display: none;">
+            <span class="typing-user"></span> is typing
+            <span class="typing-dots">
+                <span>.</span><span>.</span><span>.</span>
+            </span>
+        </div>
+
+        <!-- Message Input -->
+        <footer class="message-input-area">
+            <form id="messageForm">
+                <div class="input-wrapper">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="Type a message..."
+                        rows="1"
+                        maxlength="5000"
+                    ></textarea>
+                    <div class="input-actions">
+                        <input 
+                            type="file" 
+                            id="fileInput" 
+                            accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.gif,.webp"
+                            style="display: none;"
+                        >
+                        <button type="button" class="btn-attach" id="attachBtn" title="Attach file">
+                            📎
+                        </button>
+                        <button type="submit" class="btn-send" id="sendBtn" title="Send message">
+                            ➤
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <div class="file-preview" id="filePreview" style="display: none;">
+                <div class="file-preview-content">
+                    <span class="file-preview-name" id="filePreviewName"></span>
+                    <span class="file-preview-size" id="filePreviewSize"></span>
+                    <button class="btn-remove-file" id="removeFileBtn">×</button>
+                </div>
+            </div>
+            <div class="input-hint">
+                Press Enter to send, Shift+Enter for new line • Max 10MB per file
+            </div>
+        </footer>
+    </div>
+
+    <!-- Socket.IO Client -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/socketClient.js"></script>
+    <script src="/js/chat.js"></script>
+</body>
+</html>

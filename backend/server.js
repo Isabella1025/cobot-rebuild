@@ -3,6 +3,7 @@ const app = require('./app');
 const { Server } = require('socket.io');
 const { testConnection } = require('./config/database');
 const { validateApiKey } = require('./config/openai');
+const { setupSocketHandlers } = require('./sockets/socketHandler');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
@@ -18,14 +19,8 @@ const io = new Server(server, {
   }
 });
 
-// Socket.IO connection handling (we'll expand this in Week 2)
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
-  });
-});
+// Setup Socket.IO event handlers
+setupSocketHandlers(io);
 
 // Make io accessible to routes
 app.set('io', io);

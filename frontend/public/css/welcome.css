@@ -1,0 +1,147 @@
+/* Welcome Page Styles */
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+}
+
+.welcome-card {
+    background-color: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 450px;
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logo-section {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.logo {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.logo-section h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 400;
+}
+
+.login-form {
+    margin-bottom: 1.5rem;
+}
+
+.help-text {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.help-text p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.footer {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.footer p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.footer .small-text {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .welcome-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .logo-section h1 {
+        font-size: 2rem;
+    }
+    
+    .logo {
+        font-size: 3rem;
+    }
+}
+
+/* Input field enhancements */
+.form-group input {
+    background-color: #f8fafc;
+}
+
+.form-group input:focus {
+    background-color: white;
+}
+
+/* Loading state */
+#loginBtn[disabled] {
+    position: relative;
+}
+
+#loginBtnText {
+    transition: opacity 0.2s ease;
+}
+
+#loginBtn[disabled] #loginBtnText {
+    opacity: 0;
+}
+
+#loginBtnLoader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

@@ -34,14 +34,24 @@ app.use(session({
   }
 }));
 
-// Serve static files from frontend
-app.use(express.static(path.join(__dirname, '../frontend/public')));
-
 // Request logging middleware (simple version for now)
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
+
+// Serve static files from frontend BEFORE API routes
+app.use(express.static(path.join(__dirname, '../frontend/public'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    } else if (filePath.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    } else if (filePath.endsWith('.html')) {
+      res.setHeader('Content-Type', 'text/html');
+    }
+  }
+}));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -52,9 +62,21 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API routes will be added here
-// Example: app.use('/api/session', sessionRouter);
-// We'll add these in the coming days
+// Import routes
+const sessionRouter = require('./routes/session.router');
+const groupRouter = require('./routes/group.router');
+const messageRouter = require('./routes/message.router');
+const fileRouter = require('./routes/file.router');
+const { attachUserInfo } = require('./middleware/auth.middleware');
+
+// Attach user info to all requests (if authenticated)
+app.use(attachUserInfo);
+
+// API routes
+app.use('/api/session', sessionRouter);
+app.use('/api/groups', groupRouter);
+app.use('/api/messages', messageRouter);
+app.use('/api/files', fileRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -70,8 +92,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404 handler
+// 404 handler - MUST be last
 app.use((req, res) => {
+  // Don't return JSON for HTML requests
+  if (req.accepts('html')) {
+    return res.status(404).send('<h1>404 - Page Not Found</h1><p>Go back to <a href="/">home</a></p>');
+  }
+  
   res.status(404).json({
     error: {
       message: 'Route not found',
