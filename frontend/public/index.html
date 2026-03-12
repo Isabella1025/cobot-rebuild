@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CampusAid - Login</title>
+    <title>CampusAid - Ashesi Student Services</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <style>
@@ -12,76 +12,176 @@
             box-sizing: border-box;
         }
 
+        :root {
+            /* Premium Color Palette */
+            --burgundy: #4E0000;
+            --burgundy-light: #6B1E1E;
+            --burgundy-dark: #3A0000;
+            --cream: #E6C9A8;
+            --cream-light: #F5E6D3;
+            --cream-dark: #D4B896;
+            --navy: #13273F;
+            --navy-light: #1E3A5F;
+            --slate: #7A8B99;
+            --chocolate: #6B4E3D;
+            
+            /* Functional Colors */
+            --success: #27ae60;
+            --error: #c0392b;
+            --warning: #f39c12;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--cream-light) 50%, var(--cream-dark) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Premium Background Pattern */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(78, 0, 0, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(19, 39, 63, 0.03) 0%, transparent 50%);
+            pointer-events: none;
         }
 
         .auth-container {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 24px;
+            box-shadow: 
+                0 20px 60px rgba(78, 0, 0, 0.15),
+                0 0 0 1px rgba(78, 0, 0, 0.05);
             width: 100%;
-            max-width: 450px;
-            padding: 40px;
+            max-width: 480px;
+            max-height: 90vh;
+            padding: 50px 45px;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.6s ease-out;
+            overflow-y: auto;
         }
 
+        /* Custom scrollbar for auth container */
+        .auth-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .auth-container::-webkit-scrollbar-track {
+            background: var(--cream-light);
+            border-radius: 4px;
+        }
+
+        .auth-container::-webkit-scrollbar-thumb {
+            background: var(--burgundy);
+            border-radius: 4px;
+        }
+
+        .auth-container::-webkit-scrollbar-thumb:hover {
+            background: var(--burgundy-dark);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Ashesi Branding */
         .logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid var(--cream);
+        }
+
+        .logo-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(78, 0, 0, 0.1));
         }
 
         .logo h1 {
-            color: #667eea;
-            font-size: 32px;
+            color: var(--burgundy);
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
             margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
         }
 
         .logo p {
-            color: #7f8c8d;
-            font-size: 14px;
+            color: var(--navy);
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
         }
 
-        .tab-buttons {
+        .logo-subtext {
+            color: var(--slate);
+            font-size: 13px;
+            margin-top: 6px;
+            font-weight: 400;
+        }
+
+        /* Tab System */
+        .tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 12px;
+            margin-bottom: 35px;
+            background: var(--cream-light);
+            padding: 6px;
+            border-radius: 12px;
         }
 
-        .tab-btn {
+        .tab {
             flex: 1;
-            padding: 12px;
+            padding: 14px 20px;
             border: none;
-            background: #f8f9fa;
-            color: #7f8c8d;
+            background: transparent;
+            color: var(--navy);
             font-size: 15px;
             font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
-            border-radius: 10px;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
 
-        .tab-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .tab:hover {
+            background: rgba(78, 0, 0, 0.05);
+        }
+
+        .tab.active {
+            background: var(--burgundy);
             color: white;
+            box-shadow: 0 4px 12px rgba(78, 0, 0, 0.25);
         }
 
+        /* Form Styling */
         .form-container {
             display: none;
         }
 
         .form-container.active {
             display: block;
-            animation: fadeIn 0.3s;
+            animation: fadeIn 0.4s ease-out;
         }
 
         @keyframes fadeIn {
@@ -90,396 +190,520 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            color: #2c3e50;
-            font-weight: 600;
+            color: var(--navy);
             font-size: 14px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #ecf0f1;
-            border-radius: 10px;
-            font-size: 15px;
-            font-family: inherit;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .form-group input::placeholder {
-            color: #bdc3c7;
-        }
-
-        .form-group select {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #ecf0f1;
-            border-radius: 10px;
-            font-size: 15px;
-            font-family: inherit;
-            transition: border-color 0.3s;
-            background: white;
-            cursor: pointer;
-        }
-
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .password-wrapper {
-            position: relative;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            color: #7f8c8d;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
             font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: 0.2px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--cream);
+            border-radius: 10px;
+            font-size: 15px;
+            color: var(--navy);
+            background: white;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--burgundy);
+            box-shadow: 0 0 0 4px rgba(78, 0, 0, 0.08);
+        }
+
+        .form-control::placeholder {
+            color: var(--slate);
+            opacity: 0.7;
+        }
+
+        /* Checkbox Styling */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding: 14px;
+            background: var(--cream-light);
+            border-radius: 10px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-group:has(input:checked) {
+            border-color: var(--burgundy);
+            background: rgba(78, 0, 0, 0.03);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
+            accent-color: var(--burgundy);
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .checkbox-group label {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--navy);
+            cursor: pointer;
+        }
+
+        /* Service Dropdown */
+        .service-select-group {
+            display: none;
+            margin-bottom: 20px;
+            padding: 18px;
+            background: var(--cream-light);
+            border-radius: 12px;
+            border-left: 4px solid var(--burgundy);
+        }
+
+        .service-select-group.visible {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+            }
+        }
+
+        /* Premium Button */
+        .btn-premium {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-light) 100%);
             color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 4px 16px rgba(78, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn-primary:hover {
+        .btn-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-premium:hover::before {
+            left: 100%;
+        }
+
+        .btn-premium:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 
+                0 8px 24px rgba(78, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
 
-        .btn-primary:disabled {
+        .btn-premium:active {
+            transform: translateY(0);
+        }
+
+        .btn-premium:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
 
-        .btn-secondary {
-            background: #f8f9fa;
-            color: #667eea;
-            margin-top: 10px;
-        }
-
-        .btn-secondary:hover {
-            background: #ecf0f1;
-        }
-
-        .error-message {
-            background: #fee;
-            border: 1px solid #fcc;
-            color: #c33;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        .success-message {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .success-message.show {
-            display: block;
-        }
-
-        .helper-text {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #7f8c8d;
-        }
-
-        .helper-text a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .helper-text a:hover {
-            text-decoration: underline;
-        }
-
-        .otp-inputs {
+        /* OTP Input */
+        .otp-container {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: center;
-            margin: 25px 0;
+            margin-bottom: 30px;
         }
 
         .otp-input {
-            width: 50px;
-            height: 55px;
+            width: 55px;
+            height: 62px;
             text-align: center;
             font-size: 24px;
-            font-weight: bold;
-            border: 2px solid #ecf0f1;
-            border-radius: 10px;
-            transition: border-color 0.3s;
+            font-weight: 700;
+            border: 2px solid var(--cream);
+            border-radius: 12px;
+            color: var(--burgundy);
+            background: white;
+            transition: all 0.3s ease;
         }
 
         .otp-input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--burgundy);
+            box-shadow: 0 0 0 4px rgba(78, 0, 0, 0.1);
+            transform: scale(1.05);
         }
 
-        .info-box {
-            background: #e8f4f8;
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        /* Helper Text */
+        .helper-text {
+            text-align: center;
+            color: var(--slate);
+            font-size: 13px;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+
+        .helper-text a {
+            color: var(--burgundy);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .helper-text a:hover {
+            color: var(--burgundy-light);
+            text-decoration: underline;
+        }
+
+        /* Alert/Notification */
+        .alert {
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 24px;
             font-size: 14px;
-            color: #2c3e50;
+            font-weight: 500;
+            display: none;
+            animation: slideIn 0.3s ease-out;
         }
 
-        .loading {
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-error {
+            background: rgba(192, 57, 43, 0.1);
+            color: var(--error);
+            border-left: 4px solid var(--error);
+        }
+
+        .alert-info {
+            background: rgba(78, 0, 0, 0.05);
+            color: var(--burgundy);
+            border-left: 4px solid var(--burgundy);
+        }
+
+        /* Loading State */
+        .spinner {
             display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-top-color: white;
-            animation: spin 1s linear infinite;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
             margin-right: 8px;
+            vertical-align: middle;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        /* Responsive */
+        /* Mobile Responsiveness */
         @media (max-width: 480px) {
             .auth-container {
-                padding: 30px 25px;
+                padding: 40px 30px;
             }
 
             .logo h1 {
-                font-size: 28px;
+                font-size: 30px;
+            }
+
+            .logo-icon {
+                font-size: 48px;
             }
 
             .otp-input {
-                width: 45px;
-                height: 50px;
-                font-size: 20px;
+                width: 48px;
+                height: 56px;
+                font-size: 22px;
+            }
+
+            .tab {
+                padding: 12px 16px;
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
     <div class="auth-container">
-        <!-- Logo -->
+        <!-- Ashesi Branding -->
         <div class="logo">
-            <h1>🎓 CampusAid</h1>
-            <p>Ashesi Student Services Platform</p>
+            <span class="logo-icon">🎓</span>
+            <h1>CampusAid</h1>
+            <p>Ashesi University</p>
+            <p class="logo-subtext">Student Support Services Platform</p>
         </div>
+
+        <!-- Alert Messages -->
+        <div id="alertMessage" class="alert"></div>
 
         <!-- Tab Buttons -->
-        <div class="tab-buttons">
-            <button class="tab-btn active" onclick="switchTab('login')">Login</button>
-            <button class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('login')">Login</button>
+            <button class="tab" onclick="switchTab('signup')">Sign Up</button>
         </div>
-
-        <!-- Error/Success Messages -->
-        <div id="errorMessage" class="error-message"></div>
-        <div id="successMessage" class="success-message"></div>
 
         <!-- Login Form -->
         <div id="loginForm" class="form-container active">
             <form onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" placeholder="your.name@ashesi.edu.gh" required>
+                    <label for="loginEmail">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="loginEmail" 
+                        class="form-control" 
+                        placeholder="your.email@ashesi.edu.gh"
+                        required
+                    >
                 </div>
 
                 <div class="form-group">
                     <label for="loginPassword">Password</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
-                        <button type="button" class="toggle-password" onclick="togglePassword('loginPassword')">👁️</button>
-                    </div>
+                    <input 
+                        type="password" 
+                        id="loginPassword" 
+                        class="form-control" 
+                        placeholder="Enter your password"
+                        required
+                    >
                 </div>
 
-                <button type="submit" class="btn btn-primary" id="loginBtn">
-                    Login
+                <button type="submit" class="btn-premium" id="loginBtn">
+                    Sign In
                 </button>
 
-                <div class="helper-text">
-                    Don't have an account? <a href="#" onclick="switchTab('signup'); return false;">Sign up</a>
-                </div>
+                <p class="helper-text">
+                    Forgot your password? <a href="/forgot-password.html">Reset it here</a>
+                </p>
             </form>
         </div>
 
         <!-- Signup Form -->
         <div id="signupForm" class="form-container">
-            <div class="info-box">
-                📧 Use your Ashesi email (@ashesi.edu.gh) to sign up
-            </div>
-
-            <!-- Staff/Student Toggle -->
-            <div class="form-group">
-                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                    <input type="checkbox" id="isStaffToggle" onchange="toggleStaffFields()" style="width: auto;">
-                    <span>I want to join as Staff</span>
-                </label>
-            </div>
-
             <form onsubmit="handleSignup(event)">
                 <div class="form-group">
-                    <label for="signupEmail">Ashesi Email</label>
-                    <input type="email" id="signupEmail" placeholder="firstname.lastname@ashesi.edu.gh" required>
+                    <label for="signupName">Full Name</label>
+                    <input 
+                        type="text" 
+                        id="signupName" 
+                        class="form-control" 
+                        placeholder="Isabella Tsikata"
+                        required
+                    >
                 </div>
 
                 <div class="form-group">
-                    <label for="signupStudentId">Student/Staff ID</label>
-                    <input type="text" id="signupStudentId" placeholder="e.g., 12345678" required>
+                    <label for="signupEmail">Ashesi Email</label>
+                    <input 
+                        type="email" 
+                        id="signupEmail" 
+                        class="form-control" 
+                        placeholder="isabella.tsikata@ashesi.edu.gh"
+                        pattern=".*@ashesi\.edu\.gh$"
+                        title="Must be an Ashesi email"
+                        required
+                    >
                 </div>
 
-                <!-- Staff-only fields -->
-                <div id="staffFields" style="display: none;">
-                    <div class="form-group">
-                        <label for="serviceSelect">Select Service <span style="color: red;">*</span></label>
-                        <select id="serviceSelect" class="form-control" required>
-                            <option value="">-- Choose Service --</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="positionInput">Position/Role (Optional)</label>
-                        <input type="text" id="positionInput" placeholder="e.g., Career Advisor, Academic Counselor">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reasonInput">Why do you want to join? (Optional)</label>
-                        <textarea id="reasonInput" rows="3" placeholder="Tell us why you want to join as staff..." style="width: 100%; padding: 14px 16px; border: 2px solid #ecf0f1; border-radius: 10px; font-family: inherit; font-size: 15px; resize: vertical;"></textarea>
-                    </div>
-
-                    <div class="info-box" style="background: #fff3cd; border-left-color: #ffc107;">
-                        ⚠️ Your staff application will be reviewed by the service administrator before approval.
-                    </div>
+                <div class="form-group">
+                    <label for="signupStudentId">Student ID</label>
+                    <input 
+                        type="text" 
+                        id="signupStudentId" 
+                        class="form-control" 
+                        placeholder="STU001"
+                        required
+                    >
                 </div>
 
                 <div class="form-group">
                     <label for="signupPassword">Password</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="signupPassword" placeholder="At least 6 characters" minlength="6" required>
-                        <button type="button" class="toggle-password" onclick="togglePassword('signupPassword')">👁️</button>
+                    <input 
+                        type="password" 
+                        id="signupPassword" 
+                        class="form-control" 
+                        placeholder="Create a strong password"
+                        minlength="6"
+                        required
+                    >
+                </div>
+
+                <!-- Staff Checkbox -->
+                <div class="checkbox-group">
+                    <input 
+                        type="checkbox" 
+                        id="isStaffCheckbox" 
+                        onchange="toggleStaffFields()"
+                    >
+                    <label for="isStaffCheckbox">I want to join as Staff</label>
+                </div>
+
+                <!-- Staff Fields (Hidden by default) -->
+                <div id="staffFields" class="service-select-group">
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label for="serviceSelect">Select Service</label>
+                        <select id="serviceSelect" class="form-control">
+                            <option value="">Loading services...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label for="staffPosition">Position</label>
+                        <input 
+                            type="text" 
+                            id="staffPosition" 
+                            class="form-control" 
+                            placeholder="e.g., Career Advisor"
+                        >
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="staffReason">Reason for Joining (Optional)</label>
+                        <input 
+                            type="text" 
+                            id="staffReason" 
+                            class="form-control" 
+                            placeholder="Brief description"
+                        >
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="signupConfirmPassword">Confirm Password</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="signupConfirmPassword" placeholder="Re-enter password" minlength="6" required>
-                        <button type="button" class="toggle-password" onclick="togglePassword('signupConfirmPassword')">👁️</button>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary" id="signupBtn">
+                <button type="submit" class="btn-premium" id="signupBtn">
                     Create Account
                 </button>
 
-                <div class="helper-text">
-                    Already have an account? <a href="#" onclick="switchTab('login'); return false;">Login</a>
-                </div>
+                <p class="helper-text">
+                    Already have an account? <a href="#" onclick="switchTab('login'); return false;">Sign in here</a>
+                </p>
             </form>
         </div>
 
         <!-- OTP Verification Form -->
         <div id="otpForm" class="form-container">
-            <div class="info-box">
-                📬 We've sent a 6-digit code to <strong id="verifyEmail"></strong>
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="font-size: 48px; margin-bottom: 16px;">📧</div>
+                <h2 style="color: var(--burgundy); font-size: 24px; margin-bottom: 8px;">Verify Your Email</h2>
+                <p style="color: var(--slate); font-size: 14px;">
+                    Enter the 6-digit code sent to<br>
+                    <strong id="otpEmail" style="color: var(--navy);"></strong>
+                </p>
             </div>
 
-            <form onsubmit="handleVerifyOTP(event)">
-                <div class="otp-inputs">
-                    <input type="text" class="otp-input" maxlength="1" id="otp1" onkeyup="moveToNext(this, 'otp2')" onpaste="handlePaste(event)">
-                    <input type="text" class="otp-input" maxlength="1" id="otp2" onkeyup="moveToNext(this, 'otp3')">
-                    <input type="text" class="otp-input" maxlength="1" id="otp3" onkeyup="moveToNext(this, 'otp4')">
-                    <input type="text" class="otp-input" maxlength="1" id="otp4" onkeyup="moveToNext(this, 'otp5')">
-                    <input type="text" class="otp-input" maxlength="1" id="otp5" onkeyup="moveToNext(this, 'otp6')">
-                    <input type="text" class="otp-input" maxlength="1" id="otp6">
+            <form onsubmit="handleOTPVerification(event)">
+                <div class="otp-container">
+                    <input type="text" class="otp-input" maxlength="1" id="otp1" oninput="moveToNext(this, 'otp2')" onkeydown="handleBackspace(event, null, 'otp1')">
+                    <input type="text" class="otp-input" maxlength="1" id="otp2" oninput="moveToNext(this, 'otp3')" onkeydown="handleBackspace(event, 'otp1', 'otp2')">
+                    <input type="text" class="otp-input" maxlength="1" id="otp3" oninput="moveToNext(this, 'otp4')" onkeydown="handleBackspace(event, 'otp2', 'otp3')">
+                    <input type="text" class="otp-input" maxlength="1" id="otp4" oninput="moveToNext(this, 'otp5')" onkeydown="handleBackspace(event, 'otp3', 'otp4')">
+                    <input type="text" class="otp-input" maxlength="1" id="otp5" oninput="moveToNext(this, 'otp6')" onkeydown="handleBackspace(event, 'otp4', 'otp5')">
+                    <input type="text" class="otp-input" maxlength="1" id="otp6" oninput="moveToNext(this, null)" onkeydown="handleBackspace(event, 'otp5', 'otp6')">
                 </div>
 
-                <button type="submit" class="btn btn-primary" id="verifyBtn">
-                    Verify Email
+                <button type="submit" class="btn-premium">
+                    Verify & Continue
                 </button>
 
-                <button type="button" class="btn btn-secondary" onclick="resendOTP()">
-                    Resend Code
-                </button>
-
-                <div class="helper-text">
-                    <a href="#" onclick="switchTab('signup'); return false;">← Back to Sign Up</a>
-                </div>
+                <p class="helper-text">
+                    Didn't receive code? <a href="#" onclick="alert('Resending OTP...'); return false;">Resend OTP</a>
+                </p>
             </form>
         </div>
     </div>
 
     <script>
         const API_BASE = 'http://localhost:3000/api';
-        let pendingEmail = '';
+        let currentEmail = '';
 
-        // Load services on page load
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadServices();
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.form-container').forEach(f => f.classList.remove('active'));
             
-            const observer = new MutationObserver(() => {
-                if (document.getElementById('otpForm').classList.contains('active')) {
-                    setTimeout(() => document.getElementById('otp1').focus(), 100);
-                }
-            });
+            if (tab === 'login') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('signupForm').classList.add('active');
+            }
+            
+            hideAlert();
+        }
 
-            observer.observe(document.getElementById('otpForm'), {
-                attributes: true,
-                attributeFilter: ['class']
-            });
-        });
+        // Alert functions
+        function showAlert(message, type = 'info') {
+            const alert = document.getElementById('alertMessage');
+            alert.textContent = message;
+            alert.className = `alert alert-${type} show`;
+        }
 
-        // Load services for staff signup
+        function hideAlert() {
+            document.getElementById('alertMessage').classList.remove('show');
+        }
+
+        // Staff fields toggle
+        function toggleStaffFields() {
+            const staffFields = document.getElementById('staffFields');
+            const isChecked = document.getElementById('isStaffCheckbox').checked;
+            
+            if (isChecked) {
+                staffFields.classList.add('visible');
+                loadServices();
+            } else {
+                staffFields.classList.remove('visible');
+            }
+        }
+
+        // Load services
         async function loadServices() {
             try {
                 const response = await fetch(`${API_BASE}/services`, {
@@ -487,308 +711,199 @@
                 });
                 const data = await response.json();
                 
-                if (data.success) {
-                    const select = document.getElementById('serviceSelect');
-                    data.data.forEach(service => {
-                        const option = document.createElement('option');
-                        option.value = service.id;
-                        option.textContent = service.service_name;
-                        select.appendChild(option);
-                    });
-                }
+                const select = document.getElementById('serviceSelect');
+                select.innerHTML = '<option value="">-- Select Service --</option>' +
+                    data.data.map(s => `<option value="${s.id}">${s.service_name}</option>`).join('');
             } catch (error) {
-                console.error('Failed to load services:', error);
+                console.error('Error loading services:', error);
             }
         }
 
-        // Toggle staff-specific fields
-        function toggleStaffFields() {
-            const isStaff = document.getElementById('isStaffToggle').checked;
-            const staffFields = document.getElementById('staffFields');
-            const serviceSelect = document.getElementById('serviceSelect');
-            
-            if (isStaff) {
-                staffFields.style.display = 'block';
-                serviceSelect.required = true;
-                document.getElementById('signupStudentId').placeholder = 'e.g., STF12345';
-                document.querySelector('label[for="signupStudentId"]').textContent = 'Staff ID';
-            } else {
-                staffFields.style.display = 'none';
-                serviceSelect.required = false;
-                document.getElementById('signupStudentId').placeholder = 'e.g., 12345678';
-                document.querySelector('label[for="signupStudentId"]').textContent = 'Student ID';
-            }
-        }
-
-        // Switch between tabs
-        function switchTab(tab) {
-            // Update tab buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event?.target?.classList?.add('active');
-
-            // Update forms
-            document.querySelectorAll('.form-container').forEach(form => form.classList.remove('active'));
-            
-            if (tab === 'login') {
-                document.getElementById('loginForm').classList.add('active');
-                document.querySelectorAll('.tab-btn')[0].classList.add('active');
-            } else if (tab === 'signup') {
-                document.getElementById('signupForm').classList.add('active');
-                document.querySelectorAll('.tab-btn')[1].classList.add('active');
-            } else if (tab === 'otp') {
-                document.getElementById('otpForm').classList.add('active');
-            }
-
-            clearMessages();
-        }
-
-        // Toggle password visibility
-        function togglePassword(inputId) {
-            const input = document.getElementById(inputId);
-            input.type = input.type === 'password' ? 'text' : 'password';
-        }
-
-        // Handle signup
-        async function handleSignup(e) {
-            e.preventDefault();
-            clearMessages();
-
-            const email = document.getElementById('signupEmail').value.trim();
-            const studentId = document.getElementById('signupStudentId').value.trim();
-            const password = document.getElementById('signupPassword').value;
-            const confirmPassword = document.getElementById('signupConfirmPassword').value;
-            const isStaff = document.getElementById('isStaffToggle').checked;
-
-            // Validate
-            if (!email.endsWith('@ashesi.edu.gh')) {
-                showError('Please use your Ashesi email address');
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                showError('Passwords do not match');
-                return;
-            }
-
-            // Prepare request body
-            const requestBody = {
-                email,
-                student_id: studentId,
-                password,
-                is_staff: isStaff
-            };
-
-            // Add staff-specific fields
-            if (isStaff) {
-                const serviceId = document.getElementById('serviceSelect').value;
-                if (!serviceId) {
-                    showError('Please select a service');
-                    return;
-                }
-                requestBody.service_id = parseInt(serviceId);
-                requestBody.position = document.getElementById('positionInput').value.trim() || null;
-                requestBody.reason = document.getElementById('reasonInput').value.trim() || null;
-            }
-
-            const btn = document.getElementById('signupBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span>Creating Account...';
-
-            try {
-                const response = await fetch(`${API_BASE}/auth/signup`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestBody)
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    pendingEmail = email;
-                    document.getElementById('verifyEmail').textContent = email;
-                    showSuccess(data.data.message || 'Verification code sent! Check your email.');
-                    setTimeout(() => switchTab('otp'), 1500);
-                } else {
-                    showError(data.error || 'Signup failed');
-                }
-
-            } catch (error) {
-                console.error('Signup error:', error);
-                showError('Network error. Please try again.');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Create Account';
-            }
-        }
-
-        // Handle OTP verification
-        async function handleVerifyOTP(e) {
-            e.preventDefault();
-            clearMessages();
-
-            const otp = ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6']
-                .map(id => document.getElementById(id).value)
-                .join('');
-
-            if (otp.length !== 6) {
-                showError('Please enter all 6 digits');
-                return;
-            }
-
-            const btn = document.getElementById('verifyBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span>Verifying...';
-
-            try {
-                const response = await fetch(`${API_BASE}/auth/verify`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: pendingEmail, otp })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    showSuccess('Email verified! Redirecting to login...');
-                    setTimeout(() => {
-                        switchTab('login');
-                        document.getElementById('loginEmail').value = pendingEmail;
-                    }, 1500);
-                } else {
-                    showError(data.error || 'Invalid code');
-                }
-
-            } catch (error) {
-                console.error('Verification error:', error);
-                showError('Network error. Please try again.');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Verify Email';
-            }
-        }
-
-        // Resend OTP
-        async function resendOTP() {
-            clearMessages();
-
-            try {
-                const response = await fetch(`${API_BASE}/auth/resend-otp`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: pendingEmail })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    showSuccess('New code sent! Check console for OTP.');
-                } else {
-                    showError(data.error || 'Failed to resend code');
-                }
-
-            } catch (error) {
-                console.error('Resend error:', error);
-                showError('Network error. Please try again.');
-            }
-        }
-
-        // Handle login
+        // Handle Login
         async function handleLogin(e) {
             e.preventDefault();
-            clearMessages();
-
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-
+            hideAlert();
+            
             const btn = document.getElementById('loginBtn');
             btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span>Logging in...';
-
+            btn.innerHTML = '<span class="spinner"></span>Signing in...';
+            
             try {
                 const response = await fetch(`${API_BASE}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({
+                        email: document.getElementById('loginEmail').value,
+                        password: document.getElementById('loginPassword').value
+                    })
                 });
-
+                
                 const data = await response.json();
-
+                console.log('Full login response:', data);
+                
                 if (data.success) {
-                    sessionStorage.setItem('user', JSON.stringify(data.data));
-                    showSuccess('Login successful! Redirecting...');
+                    // Handle different possible response structures
+                    let user = null;
+                    
+                    if (data.data && data.data.user) {
+                        user = data.data.user;
+                    } else if (data.data) {
+                        user = data.data;
+                    } else if (data.user) {
+                        user = data.user;
+                    }
+                    
+                    console.log('Extracted user:', user);
+                    
+                    if (!user) {
+                        showAlert('Login succeeded but no user data received', 'error');
+                        console.error('Could not find user in response:', data);
+                        return;
+                    }
+                    
+                    // Store user data
+                    sessionStorage.setItem('user', JSON.stringify(user));
+                    
+                    // Verify storage
+                    const stored = sessionStorage.getItem('user');
+                    console.log('Stored user data:', stored);
+                    
+                    showAlert('Login successful! Redirecting...', 'success');
                     setTimeout(() => {
                         window.location.href = '/services.html';
                     }, 1000);
                 } else {
-                    showError(data.error || 'Login failed');
+                    showAlert(data.error || 'Login failed', 'error');
                 }
-
             } catch (error) {
-                console.error('Login error:', error);
-                showError('Network error. Please try again.');
+                showAlert('Network error. Please try again.', 'error');
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Login';
+                btn.innerHTML = 'Sign In';
             }
         }
 
-        // OTP input navigation
+        // Handle Signup
+        async function handleSignup(e) {
+            e.preventDefault();
+            hideAlert();
+            
+            const isStaff = document.getElementById('isStaffCheckbox').checked;
+            const btn = document.getElementById('signupBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>Creating account...';
+            
+            const payload = {
+                full_name: document.getElementById('signupName').value,
+                email: document.getElementById('signupEmail').value,
+                student_id: document.getElementById('signupStudentId').value,
+                password: document.getElementById('signupPassword').value
+            };
+            
+            if (isStaff) {
+                payload.is_staff = true;
+                payload.service_id = document.getElementById('serviceSelect').value;
+                payload.position = document.getElementById('staffPosition').value;
+                payload.reason = document.getElementById('staffReason').value;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentEmail = payload.email;
+                    document.getElementById('otpEmail').textContent = currentEmail;
+                    document.getElementById('signupForm').classList.remove('active');
+                    document.getElementById('otpForm').classList.add('active');
+                    showAlert('OTP sent to your email!', 'success');
+                    document.getElementById('otp1').focus();
+                } else {
+                    showAlert(data.error || 'Signup failed', 'error');
+                }
+            } catch (error) {
+                showAlert('Network error. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Create Account';
+            }
+        }
+
+        // OTP Navigation
         function moveToNext(current, nextId) {
             if (current.value.length === 1 && nextId) {
                 document.getElementById(nextId).focus();
             }
         }
 
-        // Handle paste for OTP
-        function handlePaste(e) {
-            e.preventDefault();
-            const paste = (e.clipboardData || window.clipboardData).getData('text');
-            const digits = paste.replace(/\D/g, '').split('').slice(0, 6);
-            
-            digits.forEach((digit, index) => {
-                const input = document.getElementById(`otp${index + 1}`);
-                if (input) input.value = digit;
-            });
-
-            if (digits.length === 6) {
-                document.getElementById('otp6').focus();
+        function handleBackspace(e, prevId, currentId) {
+            if (e.key === 'Backspace' && !document.getElementById(currentId).value && prevId) {
+                document.getElementById(prevId).focus();
             }
         }
 
-        // Show error message
-        function showError(message) {
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = message;
-            errorDiv.classList.add('show');
-        }
-
-        // Show success message
-        function showSuccess(message) {
-            const successDiv = document.getElementById('successMessage');
-            successDiv.textContent = message;
-            successDiv.classList.add('show');
-        }
-
-        // Clear messages
-        function clearMessages() {
-            document.getElementById('errorMessage').classList.remove('show');
-            document.getElementById('successMessage').classList.remove('show');
-        }
-
-        // Focus first OTP input when OTP form is shown
-        document.addEventListener('DOMContentLoaded', () => {
-            const observer = new MutationObserver(() => {
-                if (document.getElementById('otpForm').classList.contains('active')) {
-                    setTimeout(() => document.getElementById('otp1').focus(), 100);
+        // Handle OTP Verification
+        async function handleOTPVerification(e) {
+            e.preventDefault();
+            hideAlert();
+            
+            const otp = ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6']
+                .map(id => document.getElementById(id).value)
+                .join('');
+            
+            if (otp.length !== 6) {
+                showAlert('Please enter all 6 digits', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/verify-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ email: currentEmail, otp })
+                });
+                
+                const data = await response.json();
+                console.log('OTP verification response:', data);
+                
+                if (data.success) {
+                    // Handle different possible response structures
+                    let user = null;
+                    
+                    if (data.data && data.data.user) {
+                        user = data.data.user;
+                    } else if (data.data) {
+                        user = data.data;
+                    } else if (data.user) {
+                        user = data.user;
+                    }
+                    
+                    console.log('Extracted user from OTP:', user);
+                    
+                    if (!user) {
+                        showAlert('Verification succeeded but no user data received', 'error');
+                        console.error('Could not find user in OTP response:', data);
+                        return;
+                    }
+                    
+                    sessionStorage.setItem('user', JSON.stringify(user));
+                    showAlert('Verification successful! Redirecting...', 'success');
+                    setTimeout(() => window.location.href = '/services.html', 1000);
+                } else {
+                    showAlert(data.error || 'Invalid OTP', 'error');
                 }
-            });
-
-            observer.observe(document.getElementById('otpForm'), {
-                attributes: true,
-                attributeFilter: ['class']
-            });
-        });
+            } catch (error) {
+                showAlert('Network error. Please try again.', 'error');
+            }
+        }
     </script>
 </body>
 </html>

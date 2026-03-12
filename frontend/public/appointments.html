@@ -363,6 +363,217 @@
             color: white;
             font-size: 18px;
         }
+
+        /* ========================================
+           MOBILE RESPONSIVENESS
+           ======================================== */
+        
+        /* Tablet (768px and below) */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .appointments-container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .back-btn {
+                width: 100%;
+            }
+
+            .filters {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .filter-group label {
+                margin-bottom: 5px;
+            }
+
+            .filter-group select {
+                width: 100%;
+            }
+
+            .appointments-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .appointment-card {
+                padding: 18px 15px;
+            }
+
+            .modal-content {
+                padding: 25px 20px;
+                max-width: 95%;
+            }
+        }
+
+        /* Mobile (480px and below) */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .appointments-container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .appointment-card h3 {
+                font-size: 16px;
+            }
+
+            .appointment-meta {
+                flex-direction: column;
+                gap: 5px;
+                align-items: flex-start;
+            }
+
+            .btn {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+
+            .stats-badge {
+                padding: 4px 10px;
+                font-size: 12px;
+            }
+
+            .empty-state h2 {
+                font-size: 20px;
+            }
+
+            .empty-state p {
+                font-size: 14px;
+            }
+        }
+
+        /* ================================================
+           PREMIUM THEME - Burgundy & Cream
+           ================================================ */
+        :root {
+            --burgundy-primary: #4E0000;
+            --burgundy-dark: #3A0000;
+            --burgundy-light: #6B1E1E;
+            --cream: #F5E6D3;
+            --cream-dark: #E6C9A8;
+            --chocolate: #6B4E3D;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--cream-dark) 100%);
+        }
+
+        .header {
+            background: white;
+            box-shadow: 0 20px 60px rgba(78, 0, 0, 0.15);
+            border: 1px solid rgba(78, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: var(--burgundy-primary);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--burgundy-primary) 0%, var(--burgundy-light) 100%);
+            box-shadow: 0 4px 15px rgba(78, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--burgundy-dark) 0%, var(--burgundy-primary) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(78, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--cream);
+            color: var(--burgundy-primary);
+            border: 2px solid var(--burgundy-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--cream-dark);
+            transform: translateY(-2px);
+        }
+
+        .card {
+            box-shadow: 0 10px 40px rgba(78, 0, 0, 0.1);
+            border: 1px solid rgba(78, 0, 0, 0.08);
+        }
+
+        .form-group label {
+            color: var(--burgundy-primary);
+        }
+
+        .form-control {
+            border: 2px solid var(--cream-dark);
+        }
+
+        .form-control:focus {
+            border-color: var(--burgundy-primary);
+            box-shadow: 0 0 0 4px rgba(78, 0, 0, 0.1);
+        }
+
+        .service-badge {
+            background: linear-gradient(135deg, var(--burgundy-primary) 0%, var(--burgundy-light) 100%);
+            box-shadow: 0 2px 8px rgba(78, 0, 0, 0.2);
+        }
+
+        .status-badge.pending {
+            background: var(--cream-dark);
+            color: var(--chocolate);
+        }
+
+        .status-badge.approved {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        .status-badge.declined {
+            background: var(--burgundy-light);
+            color: white;
+        }
+
+        .appointment-card {
+            border-left: 4px solid var(--burgundy-primary);
+        }
+
+        .appointment-card:hover {
+            box-shadow: 0 12px 40px rgba(78, 0, 0, 0.15);
+        }
+
+        .alert-success {
+            background: #D4EDDA;
+            border-color: #C3E6CB;
+        }
+
+        .alert-error {
+            background: #F8D7DA;
+            border-color: var(--burgundy-light);
+        }
+
+        .loading {
+            color: var(--chocolate);
+        }
     </style>
 </head>
 <body>

@@ -12,161 +12,768 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --burgundy: #4E0000;
+            --burgundy-light: #6B1E1E;
+            --burgundy-dark: #3A0000;
+            --cream: #E6C9A8;
+            --cream-light: #F5E6D3;
+            --cream-dark: #D4B896;
+            --navy: #13273F;
+            --navy-light: #1E3A5F;
+            --slate: #7A8B99;
+            --chocolate: #6B4E3D;
+            --success: #27ae60;
+            --error: #c0392b;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--cream-light) 0%, var(--cream) 50%, var(--cream-dark) 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 30px 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 15% 85%, rgba(78, 0, 0, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 85% 15%, rgba(19, 39, 63, 0.04) 0%, transparent 50%);
+            pointer-events: none;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
+        /* Premium Header */
         .header {
             background: white;
-            padding: 20px 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 28px 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 
+                0 10px 40px rgba(78, 0, 0, 0.08),
+                0 0 0 1px rgba(78, 0, 0, 0.03);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            animation: slideDown 0.6s ease-out;
         }
 
-        .header h1 {
-            color: #667eea;
-            font-size: 28px;
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-left h1 {
+            color: var(--burgundy);
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            color: var(--slate);
+            font-size: 15px;
+            font-weight: 500;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
+        }
+
+        .user-details {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 700;
+            color: var(--navy);
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 13px;
+            color: var(--slate);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .quick-links {
+            margin-top: 10px;
+        }
+
+        .quick-link {
+            display: inline-block;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-light) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-right: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(78, 0, 0, 0.2);
+        }
+
+        .quick-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(78, 0, 0, 0.3);
         }
 
         .logout-btn {
-            background: #e74c3c;
+            background: linear-gradient(135deg, var(--burgundy-dark) 0%, var(--burgundy) 100%);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(78, 0, 0, 0.2);
         }
 
         .logout-btn:hover {
-            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(78, 0, 0, 0.3);
         }
 
+        /* Services Grid */
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
         }
 
         .service-card {
             background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 
+                0 10px 40px rgba(78, 0, 0, 0.08),
+                0 0 0 1px rgba(78, 0, 0, 0.03);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.6s ease-out backwards;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-light) 100%);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-card:nth-child(1) { animation-delay: 0.1s; }
+        .service-card:nth-child(2) { animation-delay: 0.2s; }
+        .service-card:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .service-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
+            box-shadow: 
+                0 20px 60px rgba(78, 0, 0, 0.15),
+                0 0 0 1px rgba(78, 0, 0, 0.05);
         }
 
-        .loading {
-            text-align: center;
-            padding: 60px;
+        .service-icon {
+            font-size: 56px;
+            margin-bottom: 24px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(78, 0, 0, 0.1));
+        }
+
+        .service-card h2 {
+            color: var(--burgundy);
+            font-size: 28px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .service-card p {
+            color: var(--navy);
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 28px;
+            opacity: 0.9;
+        }
+
+        .channels-section {
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 2px solid var(--cream-light);
+        }
+
+        .channels-title {
+            color: var(--navy);
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 16px;
+            opacity: 0.7;
+        }
+
+        .channel-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--cream-light);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .channel-item:hover {
             background: white;
-            border-radius: 15px;
-            color: #7f8c8d;
-            font-size: 18px;
+            border-color: var(--burgundy);
+            transform: translateX(4px);
         }
 
+        .channel-name {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: 14px;
+        }
+
+        .channel-arrow {
+            color: var(--burgundy);
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .channel-item:hover .channel-arrow {
+            opacity: 1;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            display: block;
+            width: 100%;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            text-align: center;
+            text-decoration: none;
+            margin-bottom: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+            letter-spacing: 0.2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-light) 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(78, 0, 0, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(78, 0, 0, 0.35);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--burgundy);
+            border: 2px solid var(--burgundy);
+            box-shadow: 0 2px 8px rgba(78, 0, 0, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: var(--burgundy);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(78, 0, 0, 0.25);
+        }
+
+        /* Staff-only buttons */
+        .btn-admin {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(19, 39, 63, 0.25);
+        }
+
+        .btn-admin:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(19, 39, 63, 0.35);
+        }
+
+        /* Empty State */
         .empty-state {
             background: white;
-            padding: 60px 30px;
-            border-radius: 15px;
+            padding: 80px 40px;
+            border-radius: 20px;
             text-align: center;
-            color: #7f8c8d;
+            box-shadow: 
+                0 10px 40px rgba(78, 0, 0, 0.08),
+                0 0 0 1px rgba(78, 0, 0, 0.03);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .empty-state-icon {
+            font-size: 72px;
+            margin-bottom: 24px;
+            opacity: 0.3;
         }
 
         .empty-state h2 {
-            color: #34495e;
-            margin-bottom: 10px;
+            color: var(--burgundy);
+            font-size: 28px;
+            margin-bottom: 12px;
+            font-weight: 700;
         }
 
-        .action-btn {
-            display: inline-block;
-            width: 100%;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: 600;
+        .empty-state p {
+            color: var(--slate);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* Loading State */
+        .loading {
             text-align: center;
-            text-decoration: none;
-            margin-bottom: 10px;
-            transition: all 0.3s;
-            cursor: pointer;
+            padding: 80px 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 
+                0 10px 40px rgba(78, 0, 0, 0.08),
+                0 0 0 1px rgba(78, 0, 0, 0.03);
         }
 
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .spinner {
+            display: inline-block;
+            width: 48px;
+            height: 48px;
+            border: 5px solid var(--cream);
+            border-top-color: var(--burgundy);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--navy);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 24px 28px;
+                text-align: center;
+            }
+
+            .header-left h1 {
+                font-size: 28px;
+            }
+
+            .user-info {
+                flex-direction: column;
+                width: 100%;
+                gap: 15px;
+            }
+
+            .user-details {
+                text-align: center;
+            }
+
+            .logout-btn {
+                width: 100%;
+            }
+
+            .service-card {
+                padding: 32px 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 20px;
+            }
+
+            .header-left h1 {
+                font-size: 24px;
+            }
+
+            .service-card {
+                padding: 28px 24px;
+            }
+
+            .service-card h2 {
+                font-size: 24px;
+            }
+
+            .service-icon {
+                font-size: 48px;
+            }
+        }
+
+        /* ========== NOTIFICATION SYSTEM ========== */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 24px;
+            padding: 8px;
+            transition: transform 0.3s;
+            background: none;
+            border: none;
+            margin-right: 10px;
+        }
+
+        .notification-bell:hover {
+            transform: scale(1.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        .notification-badge.show {
+            display: flex;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 380px;
+            max-height: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(78, 0, 0, 0.2);
+            margin-top: 10px;
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            border: 2px solid var(--burgundy);
+        }
+
+        .notification-dropdown.show {
+            display: flex;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .notification-header {
+            padding: 20px;
+            border-bottom: 2px solid var(--cream);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--cream-light);
+        }
+
+        .notification-header h3 {
+            color: var(--burgundy);
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .mark-all-read {
+            color: var(--burgundy);
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .mark-all-read:hover {
+            text-decoration: underline;
+        }
+
+        .notification-list {
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .notification-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--cream);
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .notification-item:hover {
+            background: var(--cream-light);
+        }
+
+        .notification-item.unread {
+            background: #FFF9F5;
+            border-left: 4px solid var(--burgundy);
+        }
+
+        .notification-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            color: var(--burgundy);
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            color: var(--chocolate);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            color: var(--slate);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .notification-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--slate);
+        }
+
+        .notification-empty-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        /* Icon Buttons (Profile, Analytics) */
+        .icon-btn {
+            position: relative;
+            cursor: pointer;
+            font-size: 24px;
+            padding: 8px;
+            transition: transform 0.3s;
+            background: none;
+            border: none;
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+
+        .icon-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .icon-btn.hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+        <!-- Premium Header -->
         <div class="header">
-            <h1>🎓 CampusAid - Student Services</h1>
+            <div class="header-left">
+                <h1>🎓 Student Services</h1>
+                <p class="header-subtitle">Ashesi University Support Platform</p>
+            </div>
             <div class="user-info">
-                <div id="userInfoDisplay"></div>
-                <button class="logout-btn" id="logoutBtn">Logout</button>
+                <div class="user-details" id="userInfoDisplay">
+                    <div class="user-name">Loading...</div>
+                    <div class="user-role">Student</div>
+                </div>
+                
+                <!-- Notification Bell -->
+                <div style="position: relative;">
+                    <button class="notification-bell" onclick="toggleNotifications()">
+                        🔔
+                        <span class="notification-badge" id="notificationBadge">0</span>
+                    </button>
+                    
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-header">
+                            <h3>Notifications</h3>
+                            <a href="#" class="mark-all-read" onclick="markAllAsRead(); return false;">Mark all as read</a>
+                        </div>
+                        
+                        <div class="notification-list" id="notificationList">
+                            <div class="notification-empty">
+                                <div class="notification-empty-icon">🔕</div>
+                                <p>No notifications yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="/profile.html" class="icon-btn" title="My Profile">
+                    👤
+                </a>
+                
+                <a href="/analytics.html" class="icon-btn" id="analyticsBtn" title="Analytics Dashboard" style="display: none;">
+                    📊
+                </a>
+                
+                <button class="logout-btn" onclick="handleLogout()">
+                    Sign Out
+                </button>
             </div>
         </div>
 
-        <!-- Loading State -->
-        <div id="loadingState" class="loading">
-            Loading services...
-        </div>
-
         <!-- Services Grid -->
-        <div id="servicesGrid" class="services-grid" style="display: none;"></div>
-
-        <!-- Empty State -->
-        <div id="emptyState" class="empty-state" style="display: none;">
-            <h2>No Services Available</h2>
-            <p>Please contact your administrator.</p>
+        <div id="servicesContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                <div class="loading-text">Loading services...</div>
+            </div>
         </div>
     </div>
 
     <script>
+        console.log('🚀 Services page script loaded!');
+        console.log('Current URL:', window.location.href);
+        console.log('Session storage:', sessionStorage.getItem('user'));
+        
         const API_BASE = 'http://localhost:3000/api';
 
         const serviceConfig = {
-            'CAREER': { icon: '💼', color: '#3498db' },
-            'ADVISING': { icon: '📚', color: '#e74c3c' },
-            'ODIP': { icon: '🌍', color: '#27ae60' }
+            'CAREER': { icon: '💼', color: '#3498db', name: 'Career Services' },
+            'ADVISING': { icon: '📚', color: '#e74c3c', name: 'Academic Advising' },
+            'ODIP': { icon: '🌍', color: '#27ae60', name: 'Diversity & International Programs' }
         };
 
         // Check authentication
         function checkAuth() {
             const user = sessionStorage.getItem('user');
-            if (!user) {
+            if (!user || user === 'undefined' || user === 'null') {
                 window.location.href = '/';
                 return null;
             }
-            return JSON.parse(user);
+            
+            try {
+                return JSON.parse(user);
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                sessionStorage.clear();
+                window.location.href = '/';
+                return null;
+            }
         }
 
-        // Display user info with role-based quick links
+        // Display user info
         function displayUserInfo(user) {
             const userInfoDiv = document.getElementById('userInfoDisplay');
             
@@ -174,200 +781,174 @@
             
             if (user.role === 'service_admin') {
                 quickLinks = `
-                    <div style="margin-top: 8px;">
-                        <a href="/staff-approvals.html" style="
-                            display: inline-block;
-                            padding: 6px 14px;
-                            background: #667eea;
-                            color: white;
-                            text-decoration: none;
-                            border-radius: 6px;
-                            font-size: 13px;
-                            font-weight: 600;
-                            margin-right: 8px;
-                        ">👥 Staff Approvals</a>
+                    <div class="quick-links">
+                        <a href="/staff-approvals.html" class="quick-link">👥 Staff Approvals</a>
                     </div>
                 `;
+                
+                // Show analytics button for service admins
+                const analyticsBtn = document.getElementById('analyticsBtn');
+                if (analyticsBtn) {
+                    analyticsBtn.style.display = 'inline-flex';
+                }
             }
             
             userInfoDiv.innerHTML = `
-                <div style="text-align: right;">
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 15px;">
-                        ${user.full_name || user.email || user.student_id}
-                    </div>
-                    <div style="font-size: 13px; color: #7f8c8d; text-transform: capitalize;">
-                        ${user.role || 'student'}
-                    </div>
-                    ${quickLinks}
-                </div>
+                <div class="user-name">${user.full_name || user.email || user.student_id}</div>
+                <div class="user-role">${user.role || 'student'}</div>
+                ${quickLinks}
             `;
         }
 
         // Load services
         async function loadServices() {
+            console.log('Loading services...');
+            
+            const user = checkAuth();
+            if (!user) {
+                console.log('No user found, redirecting to login');
+                return;
+            }
+
+            console.log('User authenticated:', user);
+            displayUserInfo(user);
+
             try {
-                const user = checkAuth();
-                if (!user) return;
-
-                displayUserInfo(user);
-
-                // Fetch services
-                const servicesResponse = await fetch(`${API_BASE}/services`, {
+                console.log('Fetching services from API...');
+                const response = await fetch(`${API_BASE}/services`, {
                     credentials: 'include'
                 });
 
-                if (!servicesResponse.ok) {
-                    throw new Error('Failed to load services');
+                console.log('Services response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: Failed to load services`);
                 }
 
-                const servicesData = await servicesResponse.json();
-                let services = servicesData.data || [];
-
-                // FILTER BASED ON ROLE
-                if (user.role === 'staff') {
-                    // Staff only see their assigned service
-                    if (user.assigned_service_id) {
-                        services = services.filter(s => s.id === user.assigned_service_id);
-                    } else {
-                        services = [];
-                    }
+                const data = await response.json();
+                console.log('Services data:', data);
+                
+                if (data.success && data.data.length > 0) {
+                    displayServices(data.data, user);
+                } else {
+                    console.log('No services found');
+                    displayEmptyState();
                 }
-                // Service admin and students see all services
-
-                // Fetch channels
-                const channelsResponse = await fetch(`${API_BASE}/channels`, {
-                    credentials: 'include'
-                });
-
-                const channelsData = await channelsResponse.json();
-                const channels = channelsData.data || [];
-
-                // Group channels by service
-                const channelsByService = {};
-                channels.forEach(channel => {
-                    if (!channelsByService[channel.service_id]) {
-                        channelsByService[channel.service_id] = [];
-                    }
-                    channelsByService[channel.service_id].push(channel);
-                });
-
-                document.getElementById('loadingState').style.display = 'none';
-
-                if (services.length === 0) {
-                    document.getElementById('emptyState').style.display = 'block';
-                    if (user.role === 'staff') {
-                        document.querySelector('.empty-state h2').textContent = 'No Service Assigned';
-                        document.querySelector('.empty-state p').textContent = 'Contact your administrator to assign you to a service.';
-                    }
-                    return;
-                }
-
-                // Display services
-                const servicesGrid = document.getElementById('servicesGrid');
-                servicesGrid.style.display = 'grid';
-
-                services.forEach(service => {
-                    const config = serviceConfig[service.service_code] || 
-                                   { icon: '📋', color: '#95a5a6' };
-                    
-                    const serviceChannels = channelsByService[service.id] || [];
-                    
-                    const card = document.createElement('div');
-                    card.className = 'service-card';
-                    card.style.borderLeft = `5px solid ${config.color}`;
-                    
-                    // Build action buttons based on role
-                    let actionButtons = '';
-                    
-                    if (user.role === 'staff' || user.role === 'service_admin') {
-                        // STAFF VIEW: Admin buttons only
-                        actionButtons = `
-                            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #ecf0f1;">
-                                <a href="/admin.html?service=${service.id}" class="action-btn" style="
-                                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                                    color: white;
-                                ">⚙️ Service Admin Dashboard</a>
-                                
-                                <a href="/staff-dashboard.html" class="action-btn" style="
-                                    background: #28a745;
-                                    color: white;
-                                ">📅 Manage Appointments</a>
-                            </div>
-                        `;
-                    } else {
-                        // STUDENT VIEW: Book appointment button
-                        actionButtons = `
-                            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #ecf0f1;">
-                                <a href="/appointments.html?service=${service.id}" class="action-btn" style="
-                                    background: #28a745;
-                                    color: white;
-                                ">📅 Book Appointment</a>
-                            </div>
-                        `;
-                    }
-                    
-                    card.innerHTML = `
-                        <div style="font-size: 48px; margin-bottom: 15px; text-align: center;">
-                            ${config.icon}
-                        </div>
-                        <h2 style="color: #2c3e50; margin-bottom: 10px; font-size: 22px; text-align: center;">
-                            ${service.service_name}
-                        </h2>
-                        <p style="color: #7f8c8d; margin-bottom: 20px; line-height: 1.6; text-align: center;">
-                            ${service.service_description || 'No description available'}
-                        </p>
-                        
-                        ${serviceChannels.length > 0 ? `
-                            <div>
-                                <h3 style="color: #34495e; font-size: 16px; margin-bottom: 12px;">
-                                    Available Channels:
-                                </h3>
-                                ${serviceChannels.map(channel => `
-                                    <div style="
-                                        display: flex;
-                                        justify-content: space-between;
-                                        align-items: center;
-                                        padding: 10px;
-                                        background: #f8f9fa;
-                                        border-radius: 6px;
-                                        margin-bottom: 8px;
-                                    ">
-                                        <span style="color: #2c3e50; font-weight: 500;">
-                                            ${channel.channel_name}
-                                        </span>
-                                        <a href="/chat.html?channel=${channel.id}" style="
-                                            background: ${config.color};
-                                            color: white;
-                                            padding: 6px 16px;
-                                            border-radius: 20px;
-                                            text-decoration: none;
-                                            font-size: 13px;
-                                            font-weight: 600;
-                                        ">Chat</a>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        ` : `
-                            <p style="color: #95a5a6; font-style: italic; font-size: 14px; text-align: center;">
-                                No channels available yet
-                            </p>
-                        `}
-                        
-                        ${actionButtons}
-                    `;
-                    
-                    servicesGrid.appendChild(card);
-                });
-
             } catch (error) {
                 console.error('Error loading services:', error);
-                document.getElementById('loadingState').style.display = 'none';
-                alert('Failed to load services. Please try again.');
+                displayErrorState(error.message);
             }
         }
 
+        // Display services
+        function displayServices(services, user) {
+            const container = document.getElementById('servicesContainer');
+            
+            // For staff, filter to only show their assigned service
+            let servicesToShow = services;
+            if (user.role === 'staff' && user.assigned_service_id) {
+                servicesToShow = services.filter(s => s.id === user.assigned_service_id);
+            }
+
+            const servicesHTML = servicesToShow.map(service => {
+                const config = serviceConfig[service.service_type] || { icon: '🎓', color: '#667eea', name: service.service_name };
+                
+                // Build channels list
+                let channelsHTML = '';
+                if (service.channels && service.channels.length > 0) {
+                    channelsHTML = `
+                        <div class="channels-section">
+                            <div class="channels-title">Available Channels</div>
+                            <div class="channel-list">
+                                ${service.channels.map(channel => `
+                                    <div class="channel-item" onclick="openChannel(${channel.id})">
+                                        <span class="channel-name">${channel.channel_name}</span>
+                                        <span class="channel-arrow">→</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Build action buttons based on role
+                let actionsHTML = '';
+                
+                if (user.role === 'student') {
+                    actionsHTML = `
+                        <a href="/appointments.html?service=${service.id}" class="action-btn btn-primary">
+                            📅 Book Appointment
+                        </a>
+                        ${service.channels && service.channels.length > 0 ? `
+                            <a href="/chat.html?channel=${service.channels[0].id}" class="action-btn btn-secondary">
+                                💬 Start Chat
+                            </a>
+                        ` : ''}
+                    `;
+                } else if (user.role === 'staff' || user.role === 'service_admin' || user.role === 'lecturer') {
+                    actionsHTML = `
+                        <a href="/admin.html?service=${service.id}" class="action-btn btn-admin">
+                            ⚙️ Service Dashboard
+                        </a>
+                        <a href="/staff-dashboard.html?service=${service.id}" class="action-btn btn-primary">
+                            📅 Manage Appointments
+                        </a>
+                        ${service.channels && service.channels.length > 0 ? `
+                            <a href="/chat.html?channel=${service.channels[0].id}" class="action-btn btn-secondary">
+                                💬 View Chats
+                            </a>
+                        ` : ''}
+                    `;
+                }
+
+                return `
+                    <div class="service-card">
+                        <span class="service-icon">${config.icon}</span>
+                        <h2>${service.service_name}</h2>
+                        <p>${service.service_description || 'Providing comprehensive support and guidance for Ashesi students.'}</p>
+                        ${channelsHTML}
+                        ${actionsHTML}
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = `<div class="services-grid">${servicesHTML}</div>`;
+        }
+
+        // Display empty state
+        function displayEmptyState() {
+            const container = document.getElementById('servicesContainer');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <h2>No Services Available</h2>
+                    <p>There are currently no services set up. Please contact your administrator.</p>
+                </div>
+            `;
+        }
+
+        // Display error state
+        function displayErrorState(errorMessage) {
+            const container = document.getElementById('servicesContainer');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">⚠️</div>
+                    <h2>Error Loading Services</h2>
+                    <p style="color: var(--error); margin-bottom: 16px;">${errorMessage || 'Unable to load services'}</p>
+                    <button class="btn-premium" onclick="loadServices()" style="max-width: 200px; margin: 0 auto;">
+                        Try Again
+                    </button>
+                </div>
+            `;
+        }
+
+        // Open channel
+        function openChannel(channelId) {
+            window.location.href = `/chat.html?channel=${channelId}`;
+        }
+
         // Logout
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
+        async function handleLogout() {
             try {
                 await fetch(`${API_BASE}/auth/logout`, {
                     method: 'POST',
@@ -375,13 +956,157 @@
                 });
             } catch (error) {
                 console.error('Logout error:', error);
+            } finally {
+                sessionStorage.clear();
+                window.location.href = '/';
             }
-            sessionStorage.clear();
-            window.location.href = '/';
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            loadServices();
+            initNotifications();
         });
 
-        // Load on page load
-        document.addEventListener('DOMContentLoaded', loadServices);
+        // ========== NOTIFICATION SYSTEM ==========
+        let notifications = [];
+        let unreadCount = 0;
+
+        function initNotifications() {
+            // Load from localStorage
+            const saved = localStorage.getItem('notifications');
+            if (saved) {
+                try {
+                    notifications = JSON.parse(saved);
+                    updateNotificationUI();
+                } catch (e) {
+                    console.error('Failed to load notifications:', e);
+                }
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                const dropdown = document.getElementById('notificationDropdown');
+                const bell = e.target.closest('.notification-bell');
+                if (!bell && dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            });
+
+            // Fetch notifications from server
+            fetchNotifications();
+        }
+
+        async function fetchNotifications() {
+            try {
+                const response = await fetch('http://localhost:3000/api/notifications', {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data) {
+                        notifications = data.data;
+                        updateNotificationUI();
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch notifications:', error);
+            }
+        }
+
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function updateNotificationUI() {
+            unreadCount = notifications.filter(n => !n.read).length;
+            
+            // Update badge
+            const badge = document.getElementById('notificationBadge');
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.classList.add('show');
+            } else {
+                badge.classList.remove('show');
+            }
+
+            // Update list
+            renderNotifications();
+            saveNotifications();
+        }
+
+        function renderNotifications() {
+            const list = document.getElementById('notificationList');
+            
+            if (notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="notification-empty">
+                        <div class="notification-empty-icon">🔕</div>
+                        <p>No notifications yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = notifications.map((n, index) => `
+                <div class="notification-item ${n.read ? '' : 'unread'}" onclick="markAsRead(${index})">
+                    <div class="notification-icon">${n.icon || '🔔'}</div>
+                    <div class="notification-content">
+                        <div class="notification-title">${n.title}</div>
+                        <div class="notification-message">${n.message}</div>
+                        <div class="notification-time">${formatTime(n.timestamp)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function markAsRead(index) {
+            if (notifications[index]) {
+                notifications[index].read = true;
+                updateNotificationUI();
+            }
+        }
+
+        function markAllAsRead() {
+            notifications.forEach(n => n.read = true);
+            updateNotificationUI();
+        }
+
+        function saveNotifications() {
+            try {
+                localStorage.setItem('notifications', JSON.stringify(notifications));
+            } catch (error) {
+                console.error('Failed to save notifications:', error);
+            }
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+            if (diff < 604800000) return `${Math.floor(diff / 86400000)}d ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        // Add a test notification function (for testing)
+        function addTestNotification() {
+            notifications.unshift({
+                type: 'test',
+                title: 'Test Notification',
+                message: 'This is a test notification',
+                icon: '🧪',
+                timestamp: new Date(),
+                read: false
+            });
+            updateNotificationUI();
+        }
     </script>
 </body>
 </html>

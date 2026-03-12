@@ -7,24 +7,53 @@ const { query, queryOne } = require('../config/database');
 class Service {
   /**
    * Get all active services
-   * @returns {Promise<Array>} Array of service objects
+   * @returns {Promise<Array>} Array of service objects with channels
    */
   static async getAll() {
-    return await query(
+    // Get all services
+    const services = await query(
       'SELECT * FROM services WHERE is_active = TRUE ORDER BY service_name'
     );
+    
+    // Get channels for each service
+    for (const service of services) {
+      const channels = await query(
+        `SELECT id, channel_name, is_active 
+         FROM service_channels 
+         WHERE service_id = ? AND is_active = TRUE 
+         ORDER BY channel_name`,
+        [service.id]
+      );
+      service.channels = channels;
+    }
+    
+    return services;
   }
 
   /**
    * Get service by ID
    * @param {number} id - Service ID
-   * @returns {Promise<Object|null>} Service object or null
+   * @returns {Promise<Object|null>} Service object with channels or null
    */
   static async getById(id) {
-    return await queryOne(
+    const service = await queryOne(
       'SELECT * FROM services WHERE id = ? AND is_active = TRUE',
       [id]
     );
+    
+    if (service) {
+      // Get channels for this service
+      const channels = await query(
+        `SELECT id, channel_name, is_active 
+         FROM service_channels 
+         WHERE service_id = ? AND is_active = TRUE 
+         ORDER BY channel_name`,
+        [service.id]
+      );
+      service.channels = channels;
+    }
+    
+    return service;
   }
 
   /**

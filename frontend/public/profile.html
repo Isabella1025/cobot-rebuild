@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusAid - My Profile</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --burgundy-primary: #4E0000;
+            --burgundy-dark: #3A0000;
+            --burgundy-light: #6B1E1E;
+            --cream: #F5E6D3;
+            --cream-dark: #E6C9A8;
+            --chocolate: #6B4E3D;
+            --slate: #7A8B99;
+            --success: #27ae60;
+            --error: #c0392b;
+            --warning: #f39c12;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--cream-dark) 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--burgundy-primary) 0%, var(--burgundy-dark) 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(78, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--burgundy-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--cream);
+            transform: translateY(-2px);
+        }
+
+        /* Notification Bell */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 24px;
+            padding: 8px;
+            transition: transform 0.3s;
+            background: none;
+            border: none;
+            color: white;
+        }
+
+        .notification-bell:hover {
+            transform: scale(1.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        .notification-badge.show {
+            display: flex;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 380px;
+            max-height: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(78, 0, 0, 0.3);
+            margin-top: 10px;
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            border: 2px solid var(--burgundy-primary);
+        }
+
+        .notification-dropdown.show {
+            display: flex;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .notification-header {
+            padding: 20px;
+            border-bottom: 2px solid var(--cream-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--cream);
+        }
+
+        .notification-header h3 {
+            color: var(--burgundy-primary);
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .mark-all-read {
+            color: var(--burgundy-primary);
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .mark-all-read:hover {
+            text-decoration: underline;
+        }
+
+        .notification-list {
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .notification-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--cream-dark);
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .notification-item:hover {
+            background: var(--cream);
+        }
+
+        .notification-item.unread {
+            background: #FFF9F5;
+            border-left: 4px solid var(--burgundy-primary);
+        }
+
+        .notification-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            color: var(--burgundy-primary);
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            color: var(--chocolate);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            color: var(--slate);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .notification-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--slate);
+        }
+
+        .notification-empty-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        /* Profile Grid */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(78, 0, 0, 0.1);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--burgundy-primary), var(--burgundy-light));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 12px rgba(78, 0, 0, 0.2);
+        }
+
+        .profile-name {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--burgundy-primary);
+            margin-bottom: 5px;
+        }
+
+        .profile-email {
+            text-align: center;
+            color: var(--slate);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .stat-box {
+            background: var(--cream);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--burgundy-primary);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--chocolate);
+            margin-top: 5px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--cream-dark);
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--slate);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: var(--burgundy-primary);
+            border-bottom-color: var(--burgundy-primary);
+        }
+
+        .tab:hover {
+            color: var(--burgundy-light);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--burgundy-primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--cream-dark);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--burgundy-primary);
+            box-shadow: 0 0 0 3px rgba(78, 0, 0, 0.1);
+        }
+
+        .form-control:disabled {
+            background: var(--cream);
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--burgundy-primary), var(--burgundy-dark));
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 0, 0, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .action-btn {
+            background: white;
+            border: 2px solid var(--cream-dark);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: var(--burgundy-primary);
+        }
+
+        .action-btn:hover {
+            border-color: var(--burgundy-primary);
+            background: var(--cream);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(78, 0, 0, 0.1);
+        }
+
+        .action-btn .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .action-btn .label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Appointment History */
+        .appointment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .appointment-item {
+            background: var(--cream);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--burgundy-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .appointment-info h4 {
+            color: var(--burgundy-primary);
+            margin-bottom: 8px;
+        }
+
+        .appointment-info p {
+            color: var(--chocolate);
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .appointment-status {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-declined {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--slate);
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .notification-dropdown {
+                width: calc(100vw - 40px);
+                right: -20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>👤 My Profile</h1>
+            <div class="header-actions">
+                <!-- Notification Bell -->
+                <div style="position: relative;">
+                    <button class="notification-bell" onclick="toggleNotifications()">
+                        🔔
+                        <span class="notification-badge" id="notificationBadge">0</span>
+                    </button>
+                    
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-header">
+                            <h3>Notifications</h3>
+                            <a href="#" class="mark-all-read" onclick="markAllAsRead(); return false;">Mark all as read</a>
+                        </div>
+                        
+                        <div class="notification-list" id="notificationList">
+                            <div class="notification-empty">
+                                <div class="notification-empty-icon">🔕</div>
+                                <p>No notifications yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="/services.html" class="btn btn-secondary">← Back to Services</a>
+            </div>
+        </div>
+
+        <!-- Alert -->
+        <div id="alertBox" class="alert"></div>
+
+        <!-- Profile Grid -->
+        <div class="profile-grid">
+            <!-- Left Column - Profile Card -->
+            <div class="profile-card">
+                <div class="profile-avatar" id="profileAvatar">IS</div>
+                <div class="profile-name" id="profileName">Loading...</div>
+                <div class="profile-email" id="profileEmail">Loading...</div>
+                
+                <div class="profile-stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="appointmentCount">0</div>
+                        <div class="stat-label">Appointments</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="memberSince">2024</div>
+                        <div class="stat-label">Member Since</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <a href="/appointments.html" class="action-btn">
+                        <div class="icon">📅</div>
+                        <div class="label">Book Appointment</div>
+                    </a>
+                    <a href="mailto:services@ashesi.edu.gh" class="action-btn">
+                        <div class="icon">📧</div>
+                        <div class="label">Email Services</div>
+                    </a>
+                    <a href="/services.html" class="action-btn">
+                        <div class="icon">💬</div>
+                        <div class="label">Join Channel</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Column - Tabs -->
+            <div class="profile-card">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('edit-profile')">Edit Profile</button>
+                    <button class="tab" onclick="switchTab('change-password')">Change Password</button>
+                    <button class="tab" onclick="switchTab('appointments')">My Appointments</button>
+                </div>
+
+                <!-- Edit Profile Tab -->
+                <div id="edit-profile" class="tab-content active">
+                    <form onsubmit="handleUpdateProfile(event)">
+                        <div class="form-group">
+                            <label for="editFullName">Full Name</label>
+                            <input type="text" id="editFullName" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editEmail">Email Address</label>
+                            <input type="email" id="editEmail" class="form-control" disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editStudentId">Student ID</label>
+                            <input type="text" id="editStudentId" class="form-control" disabled>
+                        </div>
+
+                        <button type="submit" class="btn-primary" id="updateProfileBtn">
+                            Save Changes
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Change Password Tab -->
+                <div id="change-password" class="tab-content">
+                    <form onsubmit="handleChangePassword(event)">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" class="form-control" minlength="6" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" class="form-control" minlength="6" required>
+                        </div>
+
+                        <button type="submit" class="btn-primary" id="changePasswordBtn">
+                            Update Password
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Appointments Tab -->
+                <div id="appointments" class="tab-content">
+                    <div class="appointment-list" id="appointmentList">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📅</div>
+                            <p>Loading appointments...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        let currentUser = null;
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            loadUserProfile();
+            loadAppointments();
+            initNotifications();
+        });
+
+        // Load user profile
+        async function loadUserProfile() {
+            try {
+                const userStr = sessionStorage.getItem('user');
+                if (!userStr) {
+                    window.location.href = '/';
+                    return;
+                }
+
+                currentUser = JSON.parse(userStr);
+                
+                // Update UI
+                document.getElementById('profileName').textContent = currentUser.full_name || 'User';
+                document.getElementById('profileEmail').textContent = currentUser.email;
+                
+                // Set avatar initials
+                const initials = (currentUser.full_name || 'U').split(' ').map(n => n[0]).join('').toUpperCase();
+                document.getElementById('profileAvatar').textContent = initials;
+
+                // Fill edit form
+                document.getElementById('editFullName').value = currentUser.full_name || '';
+                document.getElementById('editEmail').value = currentUser.email || '';
+                document.getElementById('editStudentId').value = currentUser.student_id || '';
+
+                // Set member since
+                if (currentUser.created_at) {
+                    const year = new Date(currentUser.created_at).getFullYear();
+                    document.getElementById('memberSince').textContent = year;
+                }
+
+            } catch (error) {
+                console.error('Failed to load profile:', error);
+                showAlert('Failed to load profile', 'error');
+            }
+        }
+
+        // Update profile
+        async function handleUpdateProfile(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('updateProfileBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>Saving...';
+
+            try {
+                const response = await fetch(`${API_BASE}/user/profile`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        full_name: document.getElementById('editFullName').value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update session storage
+                    currentUser.full_name = document.getElementById('editFullName').value;
+                    sessionStorage.setItem('user', JSON.stringify(currentUser));
+                    
+                    // Update display
+                    document.getElementById('profileName').textContent = currentUser.full_name;
+                    const initials = currentUser.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
+                    document.getElementById('profileAvatar').textContent = initials;
+
+                    showAlert('Profile updated successfully!', 'success');
+                } else {
+                    showAlert(data.error || 'Failed to update profile', 'error');
+                }
+            } catch (error) {
+                showAlert('Network error. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Save Changes';
+            }
+        }
+
+        // Change password
+        async function handleChangePassword(e) {
+            e.preventDefault();
+
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                showAlert('Passwords do not match', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('changePasswordBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>Updating...';
+
+            try {
+                const response = await fetch(`${API_BASE}/user/change-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        current_password: document.getElementById('currentPassword').value,
+                        new_password: newPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('Password changed successfully!', 'success');
+                    e.target.reset();
+                } else {
+                    showAlert(data.error || 'Failed to change password', 'error');
+                }
+            } catch (error) {
+                showAlert('Network error. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Update Password';
+            }
+        }
+
+        // Load appointments
+        async function loadAppointments() {
+            try {
+                const response = await fetch(`${API_BASE}/appointments/my-appointments`, {
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const appointments = data.data || [];
+                    
+                    // Update count
+                    document.getElementById('appointmentCount').textContent = appointments.length;
+
+                    // Render appointments
+                    const list = document.getElementById('appointmentList');
+                    
+                    if (appointments.length === 0) {
+                        list.innerHTML = `
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📅</div>
+                                <p>No appointments yet</p>
+                                <a href="/appointments.html" class="btn-primary" style="margin-top: 15px; display: inline-block;">Book Your First Appointment</a>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    list.innerHTML = appointments.map(apt => `
+                        <div class="appointment-item">
+                            <div class="appointment-info">
+                                <h4>${apt.service_name || 'Service'}</h4>
+                                <p>📅 ${formatDate(apt.appointment_date)} at ${apt.appointment_time || 'TBD'}</p>
+                                <p>${apt.reason || 'No reason provided'}</p>
+                            </div>
+                            <div class="appointment-status status-${apt.status}">
+                                ${apt.status.charAt(0).toUpperCase() + apt.status.slice(1)}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Failed to load appointments:', error);
+            }
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Alert system
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.className = `alert alert-${type} show`;
+            alertBox.textContent = message;
+
+            setTimeout(() => {
+                alertBox.classList.remove('show');
+            }, 5000);
+        }
+
+        // Format date
+        function formatDate(dateStr) {
+            if (!dateStr) return 'TBD';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+
+        // ========== NOTIFICATION SYSTEM ==========
+        let notifications = [];
+        let unreadCount = 0;
+
+        function initNotifications() {
+            const saved = localStorage.getItem('notifications');
+            if (saved) {
+                try {
+                    notifications = JSON.parse(saved);
+                    updateNotificationUI();
+                } catch (e) {
+                    console.error('Failed to load notifications:', e);
+                }
+            }
+
+            document.addEventListener('click', (e) => {
+                const dropdown = document.getElementById('notificationDropdown');
+                const bell = e.target.closest('.notification-bell');
+                if (!bell && dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            });
+
+            fetchNotifications();
+        }
+
+        async function fetchNotifications() {
+            try {
+                const response = await fetch(`${API_BASE}/notifications`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data) {
+                        notifications = data.data;
+                        updateNotificationUI();
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch notifications:', error);
+            }
+        }
+
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function updateNotificationUI() {
+            unreadCount = notifications.filter(n => !n.read).length;
+            
+            const badge = document.getElementById('notificationBadge');
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.classList.add('show');
+            } else {
+                badge.classList.remove('show');
+            }
+
+            renderNotifications();
+            saveNotifications();
+        }
+
+        function renderNotifications() {
+            const list = document.getElementById('notificationList');
+            
+            if (notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="notification-empty">
+                        <div class="notification-empty-icon">🔕</div>
+                        <p>No notifications yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = notifications.map((n, index) => `
+                <div class="notification-item ${n.read ? '' : 'unread'}" onclick="markAsRead(${index})">
+                    <div class="notification-icon">${n.icon || '🔔'}</div>
+                    <div class="notification-content">
+                        <div class="notification-title">${n.title}</div>
+                        <div class="notification-message">${n.message}</div>
+                        <div class="notification-time">${formatTime(n.timestamp)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function markAsRead(index) {
+            if (notifications[index]) {
+                notifications[index].read = true;
+                updateNotificationUI();
+            }
+        }
+
+        function markAllAsRead() {
+            notifications.forEach(n => n.read = true);
+            updateNotificationUI();
+        }
+
+        function saveNotifications() {
+            try {
+                localStorage.setItem('notifications', JSON.stringify(notifications));
+            } catch (error) {
+                console.error('Failed to save notifications:', error);
+            }
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+            if (diff < 604800000) return `${Math.floor(diff / 86400000)}d ago`;
+            
+            return date.toLocaleDateString();
+        }
+    </script>
+</body>
+</html>

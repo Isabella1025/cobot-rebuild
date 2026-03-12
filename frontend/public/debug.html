@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Debug - Services Page</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        .debug-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4E0000;
+        }
+        h2 {
+            color: #4E0000;
+            margin-top: 0;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        button {
+            background: #4E0000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #6B1E1E;
+        }
+        .success { color: #27ae60; }
+        .error { color: #c0392b; }
+    </style>
+</head>
+<body>
+    <h1>🔍 CampusAid Debug Page</h1>
+    
+    <div class="debug-box">
+        <h2>1. Current URL</h2>
+        <pre id="currentUrl"></pre>
+    </div>
+
+    <div class="debug-box">
+        <h2>2. Session Storage</h2>
+        <pre id="sessionData"></pre>
+    </div>
+
+    <div class="debug-box">
+        <h2>3. User Object</h2>
+        <pre id="userData"></pre>
+    </div>
+
+    <div class="debug-box">
+        <h2>4. API Test</h2>
+        <button onclick="testServicesAPI()">Test Services API</button>
+        <button onclick="testAuthAPI()">Test Auth API</button>
+        <pre id="apiResponse"></pre>
+    </div>
+
+    <div class="debug-box">
+        <h2>5. Actions</h2>
+        <button onclick="window.location.href='/services.html'">Go to Services Page</button>
+        <button onclick="window.location.href='/'">Go to Login</button>
+        <button onclick="clearAndReload()">Clear Session & Reload</button>
+    </div>
+
+    <script>
+        // Display current URL
+        document.getElementById('currentUrl').textContent = window.location.href;
+
+        // Display session storage
+        const sessionKeys = [];
+        for (let i = 0; i < sessionStorage.length; i++) {
+            const key = sessionStorage.key(i);
+            sessionKeys.push(`${key}: ${sessionStorage.getItem(key)}`);
+        }
+        document.getElementById('sessionData').textContent = sessionKeys.join('\n') || 'No session data';
+
+        // Display user object
+        try {
+            const userStr = sessionStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                document.getElementById('userData').textContent = JSON.stringify(user, null, 2);
+                document.getElementById('userData').className = 'success';
+            } else {
+                document.getElementById('userData').textContent = 'No user in session';
+                document.getElementById('userData').className = 'error';
+            }
+        } catch (e) {
+            document.getElementById('userData').textContent = 'Error: ' + e.message;
+            document.getElementById('userData').className = 'error';
+        }
+
+        // Test Services API
+        async function testServicesAPI() {
+            const output = document.getElementById('apiResponse');
+            output.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/services', {
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                output.textContent = `Status: ${response.status}\n\n` + JSON.stringify(data, null, 2);
+                output.className = response.ok ? 'success' : 'error';
+            } catch (error) {
+                output.textContent = 'Error: ' + error.message;
+                output.className = 'error';
+            }
+        }
+
+        // Test Auth API
+        async function testAuthAPI() {
+            const output = document.getElementById('apiResponse');
+            output.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/auth/check', {
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                output.textContent = `Status: ${response.status}\n\n` + JSON.stringify(data, null, 2);
+                output.className = response.ok ? 'success' : 'error';
+            } catch (error) {
+                output.textContent = 'Error: ' + error.message;
+                output.className = 'error';
+            }
+        }
+
+        // Clear and reload
+        function clearAndReload() {
+            sessionStorage.clear();
+            localStorage.clear();
+            location.reload();
+        }
+    </script>
+</body>
+</html>

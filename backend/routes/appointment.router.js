@@ -4,6 +4,11 @@ const Appointment = require('../models/Appointment');
 const { query } = require('../config/database');
 const { requireAuth, requireRole, requireAppointmentAccess } = require('../middleware/permission.middleware');
 
+router.get('/test', (req, res) => {
+  console.log('TEST ROUTE HIT!');
+  res.json({ success: true, message: 'Router is working!' });
+});
+
 /**
  * @route   GET /api/appointments/staff/:serviceId
  * @desc    Get staff members for a service
@@ -367,6 +372,48 @@ router.put('/:id/reschedule', async (req, res) => {
 });
 
 /**
+ * @route   GET /api/appointments/my-appointments
+ * @desc    Get current user's appointments (for profile page)
+ * @access  Private
+ */
+router.get('/my-appointments', async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).json({
+        success: false,
+        error: 'Not authenticated'
+      });
+    }
+
+    const userId = req.session.user.id;
+
+    const appointments = await query(`
+      SELECT 
+        a.*,
+        s.service_name,
+        u.full_name as staff_name
+      FROM appointments a
+      LEFT JOIN services s ON a.service_id = s.id
+      LEFT JOIN users u ON a.assigned_staff_id = u.id
+      WHERE a.student_id = ?
+      ORDER BY a.created_at DESC
+    `, [userId]);
+
+    res.json({
+      success: true,
+      data: appointments
+    });
+
+  } catch (error) {
+    console.error('Get my appointments error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch appointments'
+    });
+  }
+});
+
+/**
  * @route   DELETE /api/appointments/:id
  * @desc    Cancel appointment
  * @access  Student (owner) or Staff
@@ -415,5 +462,6 @@ router.delete('/:id', async (req, res) => {
     });
   }
 });
+
 
 module.exports = router;

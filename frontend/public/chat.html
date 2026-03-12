@@ -455,23 +455,351 @@
             background: transparent;
         }
 
-        /* Mobile Responsive */
+        /* ========================================
+           MOBILE RESPONSIVENESS
+           ======================================== */
+        
+        /* Tablet (768px and below) */
         @media (max-width: 768px) {
             .sidebar {
                 position: absolute;
-                width: 100%;
-                z-index: 10;
+                width: 280px;
+                z-index: 100;
                 transform: translateX(-100%);
                 transition: transform 0.3s;
+                box-shadow: 4px 0 10px rgba(0,0,0,0.2);
             }
 
             .sidebar.show {
                 transform: translateX(0);
             }
+
+            .main-content {
+                margin-left: 0 !important;
+            }
+
+            /* Mobile menu button */
+            .mobile-menu-btn {
+                display: block !important;
+                position: fixed;
+                top: 15px;
+                left: 15px;
+                z-index: 101;
+                background: #667eea;
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 20px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            }
+
+            .chat-header {
+                padding-left: 60px; /* Space for menu button */
+            }
+
+            .chat-input-container {
+                padding: 15px;
+            }
+
+            .chat-input {
+                font-size: 15px;
+            }
+        }
+
+        /* Mobile (480px and below) */
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 100%;
+            }
+
+            .chat-header h2 {
+                font-size: 16px;
+            }
+
+            .back-btn {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .message {
+                max-width: 90%;
+                padding: 10px 12px;
+            }
+
+            .message-text {
+                font-size: 14px;
+            }
+
+            .message-meta {
+                font-size: 11px;
+            }
+
+            .chat-input-container {
+                padding: 10px;
+                gap: 8px;
+            }
+
+            .file-btn,
+            .voice-btn {
+                padding: 10px;
+                font-size: 18px;
+            }
+
+            .send-btn {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+
+            .attachment-preview {
+                padding: 8px;
+            }
+
+            .attachment-name {
+                font-size: 13px;
+            }
+        }
+
+        /* Mobile menu button (hidden by default, shown on mobile) */
+        .mobile-menu-btn {
+            display: none;
+        }
+
+        /* ================================================
+           PREMIUM THEME OVERRIDES - Burgundy & Cream
+           ================================================ */
+        :root {
+            --burgundy-primary: #4E0000;
+            --burgundy-dark: #3A0000;
+            --burgundy-light: #6B1E1E;
+            --cream: #F5E6D3;
+            --cream-dark: #E6C9A8;
+            --navy: #13273F;
+            --slate: #7A8B99;
+            --chocolate: #6B4E3D;
+            --white: #FFFFFF;
+            --off-white: #FAFAF8;
+        }
+
+        body {
+            background: var(--cream);
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, var(--burgundy-primary) 0%, var(--burgundy-dark) 100%);
+            box-shadow: 4px 0 20px rgba(78, 0, 0, 0.15);
+        }
+
+        .sidebar-header {
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            color: var(--cream);
+            font-weight: 600;
+        }
+
+        .user-info {
+            color: var(--cream-dark);
+        }
+
+        .back-btn {
+            background: var(--cream);
+            color: var(--burgundy-primary);
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn:hover {
+            background: var(--cream-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .channel-item {
+            color: var(--cream);
+        }
+
+        .channel-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .channel-item.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left-color: var(--cream);
+        }
+
+        .channel-service {
+            color: var(--cream-dark);
+        }
+
+        .chat-main {
+            background: var(--off-white);
+        }
+
+        .chat-header {
+            background: var(--white);
+            border-bottom: 2px solid var(--cream-dark);
+            box-shadow: 0 2px 20px rgba(78, 0, 0, 0.08);
+        }
+
+        .chat-header h1 {
+            color: var(--burgundy-primary);
+            font-weight: 700;
+        }
+
+        .chat-header p {
+            color: var(--chocolate);
+        }
+
+        .chat-messages {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--off-white) 100%);
+        }
+
+        .message-avatar {
+            background: linear-gradient(135deg, var(--burgundy-primary) 0%, var(--burgundy-light) 100%);
+            box-shadow: 0 2px 8px rgba(78, 0, 0, 0.2);
+        }
+
+        .message-sender {
+            color: var(--burgundy-primary);
+            font-weight: 600;
+        }
+
+        .message-time {
+            color: var(--slate);
+        }
+
+        .message-badge {
+            background: var(--burgundy-primary);
+        }
+
+        .message-badge.bot {
+            background: var(--chocolate);
+        }
+
+        .message-text {
+            background: var(--white);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(78, 0, 0, 0.08);
+        }
+
+        .message.own .message-text {
+            background: linear-gradient(135deg, var(--burgundy-primary) 0%, var(--burgundy-light) 100%);
+            color: var(--cream);
+            border: none;
+        }
+
+        .message.bot .message-text {
+            background: #FFF9F5;
+            border-left: 4px solid var(--chocolate);
+            box-shadow: 0 2px 12px rgba(107, 78, 61, 0.1);
+        }
+
+        .chat-input {
+            background: var(--white);
+            border-top: 2px solid var(--cream-dark);
+            box-shadow: 0 -2px 20px rgba(78, 0, 0, 0.08);
+        }
+
+        .message-input {
+            border: 2px solid var(--cream-dark);
+            background: var(--off-white);
+        }
+
+        .message-input:focus {
+            border-color: var(--burgundy-primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(78, 0, 0, 0.1);
+        }
+
+        .attach-btn {
+            background: var(--burgundy-primary);
+            box-shadow: 0 2px 8px rgba(78, 0, 0, 0.2);
+        }
+
+        .attach-btn:hover {
+            background: var(--burgundy-dark);
+            box-shadow: 0 4px 12px rgba(78, 0, 0, 0.3);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, var(--burgundy-primary) 0%, var(--burgundy-light) 100%);
+            box-shadow: 0 2px 8px rgba(78, 0, 0, 0.2);
+            font-weight: 600;
+        }
+
+        .send-btn:hover {
+            background: linear-gradient(135deg, var(--burgundy-dark) 0%, var(--burgundy-primary) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 0, 0, 0.3);
+        }
+
+        .file-preview {
+            background: var(--off-white);
+            border: 2px solid var(--cream-dark);
+        }
+
+        .file-preview-name {
+            color: var(--burgundy-primary);
+        }
+
+        .file-preview-remove {
+            background: var(--burgundy-primary);
+        }
+
+        .file-preview-remove:hover {
+            background: var(--burgundy-dark);
+        }
+
+        .message-file {
+            background: linear-gradient(135deg, #FFF9F5 0%, var(--cream) 100%);
+            border: 2px solid var(--burgundy-primary);
+        }
+
+        .message-file:hover {
+            background: var(--cream);
+            box-shadow: 0 4px 12px rgba(78, 0, 0, 0.15);
+        }
+
+        .message-file-name {
+            color: var(--burgundy-primary);
+        }
+
+        .message-file-download {
+            color: var(--burgundy-primary);
+        }
+
+        .welcome-message {
+            background: linear-gradient(135deg, var(--burgundy-primary) 0%, var(--burgundy-light) 100%);
+            color: var(--cream);
+            box-shadow: 0 8px 24px rgba(78, 0, 0, 0.2);
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb,
+        .channels-list::-webkit-scrollbar-thumb {
+            background: var(--burgundy-primary);
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover,
+        .channels-list::-webkit-scrollbar-thumb:hover {
+            background: var(--burgundy-dark);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                background: var(--burgundy-primary) !important;
+                box-shadow: 0 4px 12px rgba(78, 0, 0, 0.3) !important;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleSidebar()">☰</button>
+
     <div class="chat-container">
         <!-- Sidebar with Channels -->
         <div class="sidebar" id="sidebar">
@@ -547,6 +875,20 @@
         let currentChannel = null;
         let currentUser = null;
         let attachedFile = null; // Store attached file
+
+        // Mobile menu toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        // Close sidebar when channel selected on mobile
+        function closeSidebarOnMobile() {
+            if (window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.remove('show');
+            }
+        }
 
         // Get URL parameters
         function getUrlParameter(name) {
@@ -720,6 +1062,9 @@
                 document.getElementById('messageInput').disabled = false;
                 document.getElementById('sendBtn').disabled = false;
                 document.getElementById('messageInput').focus();
+
+                // Close sidebar on mobile after selecting channel
+                closeSidebarOnMobile();
 
             } catch (error) {
                 console.error('Error loading channel:', error);

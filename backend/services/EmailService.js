@@ -260,6 +260,142 @@ class EmailService {
   }
 
   /**
+   * Send password reset confirmation email
+   */
+  async sendPasswordResetConfirmation(toEmail, userName = '') {
+    try {
+      const greeting = userName ? `Hi ${userName}` : 'Hello';
+      
+      const mailOptions = {
+        from: {
+          name: 'CampusAid - Ashesi University',
+          address: process.env.EMAIL_USER
+        },
+        to: toEmail,
+        subject: 'Password Reset Successful - CampusAid',
+        html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+              }
+              .email-container {
+                max-width: 600px;
+                margin: 40px auto;
+                background: white;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+              }
+              .header {
+                background: linear-gradient(135deg, #4E0000 0%, #6B1E1E 100%);
+                padding: 30px;
+                text-align: center;
+              }
+              .header h1 {
+                color: #F5E6D3;
+                margin: 0;
+                font-size: 24px;
+              }
+              .content {
+                padding: 40px 30px;
+              }
+              .success-icon {
+                text-align: center;
+                font-size: 60px;
+                margin-bottom: 20px;
+              }
+              .message {
+                color: #2c3e50;
+                font-size: 16px;
+                line-height: 1.6;
+                margin-bottom: 20px;
+              }
+              .info-box {
+                background: #f8f9fa;
+                border-left: 4px solid #27ae60;
+                padding: 15px;
+                margin: 20px 0;
+                border-radius: 5px;
+              }
+              .footer {
+                background: #f8f9fa;
+                padding: 20px;
+                text-align: center;
+                color: #7f8c8d;
+                font-size: 13px;
+              }
+              .button {
+                display: inline-block;
+                padding: 12px 30px;
+                background: linear-gradient(135deg, #4E0000 0%, #6B1E1E 100%);
+                color: white;
+                text-decoration: none;
+                border-radius: 8px;
+                margin: 20px 0;
+                font-weight: 600;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="email-container">
+              <div class="header">
+                <h1>🎓 CampusAid</h1>
+              </div>
+              <div class="content">
+                <div class="success-icon">✅</div>
+                
+                <p class="message"><strong>${greeting},</strong></p>
+                
+                <p class="message">
+                  Your password has been successfully reset. You can now log in to CampusAid with your new password.
+                </p>
+                
+                <div class="info-box">
+                  <p style="margin: 0; color: #27ae60; font-weight: 600;">
+                    ✓ Password Reset Successful
+                  </p>
+                  <p style="margin: 5px 0 0 0; color: #555; font-size: 14px;">
+                    Your account is now secure with your new password.
+                  </p>
+                </div>
+                
+                <div style="text-align: center;">
+                  <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}" class="button">
+                    Go to Login
+                  </a>
+                </div>
+                
+                <p class="message" style="margin-top: 30px; font-size: 14px; color: #e74c3c;">
+                  <strong>Important:</strong> If you didn't make this change, please contact support immediately.
+                </p>
+              </div>
+              <div class="footer">
+                <p>This is an automated message from CampusAid - Ashesi University.</p>
+                <p>For support, contact: ${process.env.SUPPORT_EMAIL || 'support@campusaid.ashesi.edu.gh'}</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `
+      };
+
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log('✓ Password reset confirmation sent:', info.messageId);
+      return { success: true, messageId: info.messageId };
+
+    } catch (error) {
+      console.error('✗ Email sending failed:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Test email connection
    */
   async testConnection() {

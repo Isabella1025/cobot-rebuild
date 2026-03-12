@@ -1,0 +1,374 @@
+<!-- Notification Bell Component -->
+<!-- Include this in any page that needs notifications -->
+
+<style>
+    .notification-bell {
+        position: relative;
+        cursor: pointer;
+        font-size: 24px;
+        padding: 8px;
+        transition: transform 0.3s;
+    }
+
+    .notification-bell:hover {
+        transform: scale(1.1);
+    }
+
+    .notification-badge {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: #e74c3c;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        animation: pulse 2s infinite;
+    }
+
+    .notification-badge.show {
+        display: flex;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+
+    .notification-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 380px;
+        max-height: 500px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(78, 0, 0, 0.2);
+        margin-top: 10px;
+        display: none;
+        flex-direction: column;
+        z-index: 1000;
+        border: 2px solid var(--burgundy-primary);
+    }
+
+    .notification-dropdown.show {
+        display: flex;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .notification-header {
+        padding: 20px;
+        border-bottom: 2px solid var(--cream-dark);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--cream);
+    }
+
+    .notification-header h3 {
+        color: var(--burgundy-primary);
+        font-size: 18px;
+        margin: 0;
+    }
+
+    .mark-all-read {
+        color: var(--burgundy-primary);
+        font-size: 13px;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .mark-all-read:hover {
+        text-decoration: underline;
+    }
+
+    .notification-list {
+        overflow-y: auto;
+        max-height: 400px;
+    }
+
+    .notification-item {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--cream-dark);
+        cursor: pointer;
+        transition: background 0.2s;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .notification-item:hover {
+        background: var(--cream);
+    }
+
+    .notification-item.unread {
+        background: #FFF9F5;
+        border-left: 4px solid var(--burgundy-primary);
+    }
+
+    .notification-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+
+    .notification-content {
+        flex: 1;
+    }
+
+    .notification-title {
+        color: var(--burgundy-primary);
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    .notification-message {
+        color: var(--chocolate);
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .notification-time {
+        color: var(--slate);
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .notification-empty {
+        padding: 40px 20px;
+        text-align: center;
+        color: var(--slate);
+    }
+
+    .notification-empty-icon {
+        font-size: 48px;
+        margin-bottom: 10px;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+        .notification-dropdown {
+            width: calc(100vw - 40px);
+            right: -20px;
+        }
+    }
+</style>
+
+<div class="notification-bell-container" style="position: relative;">
+    <div class="notification-bell" onclick="toggleNotifications()">
+        🔔
+        <span class="notification-badge" id="notificationBadge">0</span>
+    </div>
+    
+    <div class="notification-dropdown" id="notificationDropdown">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <a href="#" class="mark-all-read" onclick="markAllAsRead(); return false;">Mark all as read</a>
+        </div>
+        
+        <div class="notification-list" id="notificationList">
+            <div class="notification-empty">
+                <div class="notification-empty-icon">🔕</div>
+                <p>No notifications yet</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Notification System
+    const NotificationSystem = {
+        socket: null,
+        notifications: [],
+        unreadCount: 0,
+
+        init(socket) {
+            this.socket = socket;
+            this.loadNotifications();
+            this.setupSocketListeners();
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                const dropdown = document.getElementById('notificationDropdown');
+                const bell = document.querySelector('.notification-bell-container');
+                if (!bell.contains(e.target) && dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        },
+
+        setupSocketListeners() {
+            if (!this.socket) return;
+
+            // Listen for new notifications
+            this.socket.on('notification', (notification) => {
+                this.addNotification(notification);
+                this.playNotificationSound();
+            });
+
+            // Listen for appointment updates
+            this.socket.on('appointmentUpdate', (data) => {
+                this.addNotification({
+                    type: 'appointment',
+                    title: `Appointment ${data.status}`,
+                    message: `Your appointment with ${data.service_name} has been ${data.status}`,
+                    icon: data.status === 'approved' ? '✅' : data.status === 'declined' ? '❌' : '📅',
+                    timestamp: new Date(),
+                    read: false
+                });
+            });
+
+            // Listen for mentions
+            this.socket.on('mention', (data) => {
+                this.addNotification({
+                    type: 'mention',
+                    title: 'You were mentioned',
+                    message: `${data.sender} mentioned you in ${data.channel}`,
+                    icon: '💬',
+                    timestamp: new Date(),
+                    read: false
+                });
+            });
+        },
+
+        async loadNotifications() {
+            try {
+                const response = await fetch('http://localhost:3000/api/notifications', {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    this.notifications = data.data || [];
+                    this.updateUI();
+                }
+            } catch (error) {
+                console.error('Failed to load notifications:', error);
+            }
+        },
+
+        addNotification(notification) {
+            this.notifications.unshift(notification);
+            if (this.notifications.length > 50) {
+                this.notifications = this.notifications.slice(0, 50);
+            }
+            this.updateUI();
+            this.saveNotifications();
+        },
+
+        updateUI() {
+            this.unreadCount = this.notifications.filter(n => !n.read).length;
+            
+            // Update badge
+            const badge = document.getElementById('notificationBadge');
+            if (this.unreadCount > 0) {
+                badge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount;
+                badge.classList.add('show');
+            } else {
+                badge.classList.remove('show');
+            }
+
+            // Update list
+            this.renderNotifications();
+        },
+
+        renderNotifications() {
+            const list = document.getElementById('notificationList');
+            
+            if (this.notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="notification-empty">
+                        <div class="notification-empty-icon">🔕</div>
+                        <p>No notifications yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = this.notifications.map((n, index) => `
+                <div class="notification-item ${n.read ? '' : 'unread'}" onclick="NotificationSystem.markAsRead(${index})">
+                    <div class="notification-icon">${n.icon || '🔔'}</div>
+                    <div class="notification-content">
+                        <div class="notification-title">${n.title}</div>
+                        <div class="notification-message">${n.message}</div>
+                        <div class="notification-time">${this.formatTime(n.timestamp)}</div>
+                    </div>
+                </div>
+            `).join('');
+        },
+
+        markAsRead(index) {
+            if (this.notifications[index]) {
+                this.notifications[index].read = true;
+                this.updateUI();
+                this.saveNotifications();
+            }
+        },
+
+        markAllAsRead() {
+            this.notifications.forEach(n => n.read = true);
+            this.updateUI();
+            this.saveNotifications();
+        },
+
+        saveNotifications() {
+            try {
+                localStorage.setItem('notifications', JSON.stringify(this.notifications));
+            } catch (error) {
+                console.error('Failed to save notifications:', error);
+            }
+        },
+
+        formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+            if (diff < 604800000) return `${Math.floor(diff / 86400000)}d ago`;
+            
+            return date.toLocaleDateString();
+        },
+
+        playNotificationSound() {
+            // Optional: Add a subtle notification sound
+            // const audio = new Audio('/notification.mp3');
+            // audio.volume = 0.3;
+            // audio.play().catch(() => {});
+        }
+    };
+
+    function toggleNotifications() {
+        const dropdown = document.getElementById('notificationDropdown');
+        dropdown.classList.toggle('show');
+    }
+
+    function markAllAsRead() {
+        NotificationSystem.markAllAsRead();
+    }
+
+    // Initialize when socket is available
+    if (typeof io !== 'undefined') {
+        const socket = io('http://localhost:3000');
+        NotificationSystem.init(socket);
+    }
+</script>

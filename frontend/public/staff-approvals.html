@@ -183,6 +183,154 @@
         .btn-secondary:hover {
             background: #5a6268;
         }
+
+        /* ========================================
+           MOBILE RESPONSIVENESS
+           ======================================== */
+        
+        /* Tablet (768px and below) */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .approvals-container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .back-btn {
+                width: 100%;
+            }
+
+            .applications-list {
+                gap: 15px;
+            }
+
+            .application-card {
+                padding: 18px 15px;
+            }
+
+            .application-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .application-actions button {
+                width: 100%;
+            }
+
+            .modal-content {
+                max-width: 95%;
+                padding: 25px 20px;
+            }
+        }
+
+        /* Mobile (480px and below) */
+        @media (max-width: 480px) {
+            .approvals-container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .application-card h3 {
+                font-size: 16px;
+            }
+
+            .application-info {
+                font-size: 13px;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+        }
+
+        /* ================================================
+           PREMIUM THEME - Burgundy & Cream
+           ================================================ */
+        :root {
+            --burgundy-primary: #4E0000;
+            --burgundy-dark: #3A0000;
+            --burgundy-light: #6B1E1E;
+            --cream: #F5E6D3;
+            --cream-dark: #E6C9A8;
+            --chocolate: #6B4E3D;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--cream-dark) 100%);
+        }
+
+        .approval-container {
+            background: white;
+            box-shadow: 0 20px 60px rgba(78, 0, 0, 0.15);
+            border: 1px solid rgba(78, 0, 0, 0.1);
+        }
+
+        .approval-container h1 {
+            color: var(--burgundy-primary);
+        }
+
+        .approval-card {
+            box-shadow: 0 8px 30px rgba(78, 0, 0, 0.08);
+            border-left: 4px solid var(--burgundy-primary);
+        }
+
+        .approval-card h3 {
+            color: var(--burgundy-primary);
+        }
+
+        .info-row strong {
+            color: var(--chocolate);
+        }
+
+        .btn-approve {
+            background: #28a745;
+        }
+
+        .btn-reject {
+            background: var(--burgundy-primary);
+        }
+
+        .btn-reject:hover {
+            background: var(--burgundy-dark);
+        }
+
+        .badge-pending {
+            background: var(--cream-dark);
+            color: var(--chocolate);
+        }
+
+        .badge-approved {
+            background: #28a745;
+        }
+
+        .badge-rejected {
+            background: var(--burgundy-primary);
+        }
+
+        .alert-success {
+            background: #D4EDDA;
+            border-color: #C3E6CB;
+        }
+
+        .alert-error {
+            background: #F8D7DA;
+            border-color: var(--burgundy-light);
+        }
+
+        .loading {
+            color: var(--chocolate);
+        }
     </style>
 </head>
 <body>

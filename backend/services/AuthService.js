@@ -46,11 +46,16 @@ class AuthService {
   /**
    * Sign up a new user
    */
-  static async signup(email, studentId, password, isStaff = false, serviceId = null, position = null, reason = null) {
+  static async signup(fullName, email, studentId, password, isStaff = false, serviceId = null, position = null, reason = null) {
     try {
       // Validate email
       if (!this.validateAshesiEmail(email)) {
         throw new Error('Email must be a valid Ashesi email (@ashesi.edu.gh)');
+      }
+
+      // Validate full name
+      if (!fullName || fullName.trim().length < 2) {
+        throw new Error('Full name is required');
       }
 
       // Check if email already exists
@@ -97,20 +102,20 @@ class AuthService {
         // Update existing unverified user
         await query(
           `UPDATE users 
-           SET student_id = ?, password_hash = ?, verification_code = ?, 
+           SET full_name = ?, student_id = ?, password_hash = ?, verification_code = ?, 
                verification_code_expires = ?, role = ?, account_status = ?,
                assigned_service_id = ?, staff_position = ?, updated_at = NOW()
            WHERE id = ?`,
-          [studentId, passwordHash, otp, otpExpires, role, accountStatus, assignedServiceId, position, existingUser.id]
+          [fullName, studentId, passwordHash, otp, otpExpires, role, accountStatus, assignedServiceId, position, existingUser.id]
         );
         userId = existingUser.id;
       } else {
         // Create new user
         const result = await query(
-          `INSERT INTO users (email, student_id, password_hash, role, account_status, assigned_service_id, 
+          `INSERT INTO users (full_name, email, student_id, password_hash, role, account_status, assigned_service_id, 
                               staff_position, verification_code, verification_code_expires, is_verified, is_active, created_at)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, FALSE, TRUE, NOW())`,
-          [email, studentId, passwordHash, role, accountStatus, assignedServiceId, position, otp, otpExpires]
+          [fullName, email, studentId, passwordHash, role, accountStatus, assignedServiceId, position, otp, otpExpires]
         );
         userId = result.insertId;
       }
@@ -135,7 +140,7 @@ class AuthService {
 
       // Send OTP email
       try {
-        await emailService.sendOTP(email, otp);
+        await emailService.sendOTP(email, otp, fullName);
         console.log(`✓ OTP email sent to ${email}`);
       } catch (emailError) {
         console.error('Email sending failed, but OTP is:', otp);
