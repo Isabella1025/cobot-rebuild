@@ -114,7 +114,7 @@ class AuthService {
         const result = await query(
           `INSERT INTO users (full_name, email, student_id, password_hash, role, account_status, assigned_service_id, 
                               staff_position, verification_code, verification_code_expires, is_verified, is_active, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, FALSE, TRUE, NOW())`,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, FALSE, TRUE, NOW())`,
           [fullName, email, studentId, passwordHash, role, accountStatus, assignedServiceId, position, otp, otpExpires]
         );
         userId = result.insertId;
@@ -202,7 +202,20 @@ class AuthService {
         [user.id]
       );
 
-      return { success: true, message: 'Email verified successfully!' };
+      // Fetch complete user data for session
+      const verifiedUser = await queryOne(
+        `SELECT id, student_id, email, full_name, role, account_status, 
+                assigned_service_id, staff_position, is_verified
+         FROM users 
+         WHERE id = ?`,
+        [user.id]
+      );
+
+      return { 
+        success: true, 
+        message: 'Email verified successfully!',
+        user: verifiedUser
+      };
 
     } catch (error) {
       console.error('Verification error:', error);
@@ -559,3 +572,6 @@ class AuthService {
 }
 
 module.exports = AuthService;
+
+
+

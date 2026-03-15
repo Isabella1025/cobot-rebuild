@@ -594,6 +594,14 @@
             Loading appointments...
         </div>
 
+        <!-- Include search/filter component -->
+        <div id="searchFilterContainer"></div>
+
+        <!-- Your existing appointments list -->
+        <div id="appointmentsList">
+            <!-- Appointments will be rendered here -->
+        </div>
+
         <!-- Appointments Grid -->
         <div id="appointmentsGrid" class="appointments-grid" style="display: none;">
             <!-- Appointments will be loaded here -->
@@ -779,6 +787,34 @@
                 showNotification('Failed to load appointments', 'error');
             }
         }
+
+        // Load search filter component
+        async function loadSearchFilter() {
+            const response = await fetch('/search-filter-component.html');
+            const html = await response.text();
+            document.getElementById('searchFilterContainer').innerHTML = html;
+            
+            // Get services for filter dropdown
+            const servicesResp = await fetch('http://localhost:3000/api/services', {
+                credentials: 'include'
+            });
+            const servicesData = await servicesResp.json();
+            
+            // Initialize search filter with your appointments data
+            SearchFilter.init(allAppointments, servicesData.data);
+        }
+
+        // Listen for filter updates
+        window.addEventListener('filterUpdate', (e) => {
+            const filteredData = e.detail.filteredData;
+            renderAppointments(filteredData);
+        });
+
+        // Call on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadAppointments();
+            loadSearchFilter();
+        });
 
         // Create appointment card
         function createAppointmentCard(apt) {

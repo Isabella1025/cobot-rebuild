@@ -554,7 +554,7 @@
                     >
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="studentIdGroup">
                     <label for="signupStudentId">Student ID</label>
                     <input 
                         type="text" 
@@ -693,13 +693,25 @@
         // Staff fields toggle
         function toggleStaffFields() {
             const staffFields = document.getElementById('staffFields');
+            const studentIdGroup = document.getElementById('studentIdGroup');
+            const studentIdInput = document.getElementById('signupStudentId');
             const isChecked = document.getElementById('isStaffCheckbox').checked;
             
             if (isChecked) {
+                // Show staff fields
                 staffFields.classList.add('visible');
                 loadServices();
+                
+                // Hide and make Student ID optional for staff
+                studentIdGroup.style.display = 'none';
+                studentIdInput.removeAttribute('required');
             } else {
+                // Hide staff fields
                 staffFields.classList.remove('visible');
+                
+                // Show and make Student ID required for students
+                studentIdGroup.style.display = 'block';
+                studentIdInput.setAttribute('required', 'required');
             }
         }
 
@@ -797,15 +809,20 @@
             const payload = {
                 full_name: document.getElementById('signupName').value,
                 email: document.getElementById('signupEmail').value,
-                student_id: document.getElementById('signupStudentId').value,
                 password: document.getElementById('signupPassword').value
             };
             
             if (isStaff) {
+                // For staff, generate a staff ID from email
+                const emailPrefix = document.getElementById('signupEmail').value.split('@')[0];
+                payload.student_id = 'STAFF-' + emailPrefix.toUpperCase();
                 payload.is_staff = true;
                 payload.service_id = document.getElementById('serviceSelect').value;
                 payload.position = document.getElementById('staffPosition').value;
                 payload.reason = document.getElementById('staffReason').value;
+            } else {
+                // For students, use the provided student ID
+                payload.student_id = document.getElementById('signupStudentId').value;
             }
             
             try {

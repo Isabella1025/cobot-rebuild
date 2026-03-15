@@ -516,6 +516,32 @@ async function loadFileForMessage(messageId) {
     }
 }
 
+// When chat loads, initialize enhanced bot
+EnhancedBotUI.init(currentServiceId, currentChannelId);
+
+// When sending message to bot, use enhanced response
+async function sendBotMessage(message) {
+    const response = await fetch('http://localhost:3000/api/bot/enhanced-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+            message: message,
+            service_id: currentServiceId,
+            channel_id: currentChannelId,
+            bot_id: currentBotId
+        })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+        // Render enhanced bot message
+        const messageElement = EnhancedBotUI.renderBotMessage(data.data, Date.now());
+        document.getElementById('messagesContainer').appendChild(messageElement);
+    }
+}
+
 // Make downloadFile globally accessible
 window.downloadFile = function(fileId) {
     console.log('Downloading file:', fileId);

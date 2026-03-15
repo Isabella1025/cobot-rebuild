@@ -1,0 +1,454 @@
+<!-- Search and Filter Component for Appointments -->
+<style>
+    .search-filter-container {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(78, 0, 0, 0.1);
+        margin-bottom: 25px;
+    }
+
+    .search-bar {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+
+    .search-input-group {
+        flex: 1;
+        min-width: 250px;
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 45px 12px 15px;
+        border: 2px solid var(--cream-dark);
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--burgundy-primary);
+        box-shadow: 0 0 0 3px rgba(78, 0, 0, 0.1);
+    }
+
+    .search-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--slate);
+        font-size: 18px;
+    }
+
+    .filter-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        color: var(--burgundy-primary);
+        font-size: 14px;
+    }
+
+    .filter-select {
+        padding: 10px 15px;
+        border: 2px solid var(--cream-dark);
+        border-radius: 8px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s;
+        min-width: 150px;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--burgundy-primary);
+    }
+
+    .filter-select:hover {
+        border-color: var(--burgundy-light);
+    }
+
+    .date-range-inputs {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .date-input {
+        padding: 10px 15px;
+        border: 2px solid var(--cream-dark);
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .date-input:focus {
+        outline: none;
+        border-color: var(--burgundy-primary);
+    }
+
+    .filter-chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
+    .filter-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        background: var(--burgundy-primary);
+        color: white;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .filter-chip-remove {
+        cursor: pointer;
+        font-weight: bold;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+    }
+
+    .filter-chip-remove:hover {
+        opacity: 1;
+    }
+
+    .clear-filters-btn {
+        padding: 8px 16px;
+        background: none;
+        border: 2px solid var(--burgundy-primary);
+        color: var(--burgundy-primary);
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 13px;
+    }
+
+    .clear-filters-btn:hover {
+        background: var(--burgundy-primary);
+        color: white;
+    }
+
+    .results-count {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--cream-dark);
+        color: var(--slate);
+        font-size: 14px;
+    }
+
+    .results-count strong {
+        color: var(--burgundy-primary);
+    }
+
+    /* No results state */
+    .no-results {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--slate);
+    }
+
+    .no-results-icon {
+        font-size: 64px;
+        margin-bottom: 15px;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+        .search-bar {
+            flex-direction: column;
+        }
+
+        .search-input-group {
+            min-width: 100%;
+        }
+
+        .filter-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-select,
+        .date-input {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="search-filter-container">
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <div class="search-input-group">
+            <input 
+                type="text" 
+                class="search-input" 
+                id="searchInput"
+                placeholder="Search appointments by service, reason, or notes..."
+                oninput="SearchFilter.handleSearch()"
+            >
+            <span class="search-icon">🔍</span>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-group">
+        <span class="filter-label">Filter by:</span>
+        
+        <select class="filter-select" id="statusFilter" onchange="SearchFilter.handleFilter()">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="declined">Declined</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+        </select>
+
+        <select class="filter-select" id="serviceFilter" onchange="SearchFilter.handleFilter()">
+            <option value="">All Services</option>
+            <!-- Will be populated dynamically -->
+        </select>
+
+        <div class="date-range-inputs">
+            <input 
+                type="date" 
+                class="date-input" 
+                id="dateFrom" 
+                onchange="SearchFilter.handleFilter()"
+                placeholder="From"
+            >
+            <span>to</span>
+            <input 
+                type="date" 
+                class="date-input" 
+                id="dateTo" 
+                onchange="SearchFilter.handleFilter()"
+                placeholder="To"
+            >
+        </div>
+
+        <button class="clear-filters-btn" onclick="SearchFilter.clearFilters()">
+            Clear Filters
+        </button>
+    </div>
+
+    <!-- Active Filter Chips -->
+    <div class="filter-chips" id="filterChips"></div>
+
+    <!-- Results Count -->
+    <div class="results-count" id="resultsCount" style="display: none;">
+        Showing <strong id="resultCountNumber">0</strong> result(s)
+    </div>
+</div>
+
+<script>
+const SearchFilter = {
+    allData: [],
+    filteredData: [],
+    activeFilters: {},
+
+    init(data, servicesList) {
+        this.allData = data;
+        this.filteredData = data;
+        
+        // Populate service filter
+        this.populateServiceFilter(servicesList);
+        
+        // Initial display
+        this.updateResultsCount();
+    },
+
+    populateServiceFilter(services) {
+        const serviceFilter = document.getElementById('serviceFilter');
+        services.forEach(service => {
+            const option = document.createElement('option');
+            option.value = service.id;
+            option.textContent = service.service_name;
+            serviceFilter.appendChild(option);
+        });
+    },
+
+    handleSearch() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        
+        if (searchTerm) {
+            this.activeFilters.search = searchTerm;
+        } else {
+            delete this.activeFilters.search;
+        }
+
+        this.applyFilters();
+    },
+
+    handleFilter() {
+        const status = document.getElementById('statusFilter').value;
+        const service = document.getElementById('serviceFilter').value;
+        const dateFrom = document.getElementById('dateFrom').value;
+        const dateTo = document.getElementById('dateTo').value;
+
+        // Update active filters
+        if (status) this.activeFilters.status = status;
+        else delete this.activeFilters.status;
+
+        if (service) this.activeFilters.service = service;
+        else delete this.activeFilters.service;
+
+        if (dateFrom) this.activeFilters.dateFrom = dateFrom;
+        else delete this.activeFilters.dateFrom;
+
+        if (dateTo) this.activeFilters.dateTo = dateTo;
+        else delete this.activeFilters.dateTo;
+
+        this.applyFilters();
+    },
+
+    applyFilters() {
+        this.filteredData = this.allData.filter(item => {
+            // Search filter
+            if (this.activeFilters.search) {
+                const searchLower = this.activeFilters.search;
+                const matchesSearch = 
+                    item.service_name?.toLowerCase().includes(searchLower) ||
+                    item.reason?.toLowerCase().includes(searchLower) ||
+                    item.staff_notes?.toLowerCase().includes(searchLower);
+                
+                if (!matchesSearch) return false;
+            }
+
+            // Status filter
+            if (this.activeFilters.status && item.status !== this.activeFilters.status) {
+                return false;
+            }
+
+            // Service filter
+            if (this.activeFilters.service && item.service_id != this.activeFilters.service) {
+                return false;
+            }
+
+            // Date from filter
+            if (this.activeFilters.dateFrom) {
+                const itemDate = new Date(item.appointment_date);
+                const fromDate = new Date(this.activeFilters.dateFrom);
+                if (itemDate < fromDate) return false;
+            }
+
+            // Date to filter
+            if (this.activeFilters.dateTo) {
+                const itemDate = new Date(item.appointment_date);
+                const toDate = new Date(this.activeFilters.dateTo);
+                if (itemDate > toDate) return false;
+            }
+
+            return true;
+        });
+
+        this.updateFilterChips();
+        this.updateResultsCount();
+        this.triggerUpdate();
+    },
+
+    updateFilterChips() {
+        const chipsContainer = document.getElementById('filterChips');
+        chipsContainer.innerHTML = '';
+
+        const filterLabels = {
+            search: 'Search',
+            status: 'Status',
+            service: 'Service',
+            dateFrom: 'From',
+            dateTo: 'To'
+        };
+
+        Object.keys(this.activeFilters).forEach(key => {
+            const chip = document.createElement('div');
+            chip.className = 'filter-chip';
+            
+            let displayValue = this.activeFilters[key];
+            
+            // Get service name if service filter
+            if (key === 'service') {
+                const serviceSelect = document.getElementById('serviceFilter');
+                displayValue = serviceSelect.options[serviceSelect.selectedIndex].text;
+            }
+
+            chip.innerHTML = `
+                ${filterLabels[key]}: ${displayValue}
+                <span class="filter-chip-remove" onclick="SearchFilter.removeFilter('${key}')">×</span>
+            `;
+            
+            chipsContainer.appendChild(chip);
+        });
+    },
+
+    removeFilter(filterKey) {
+        delete this.activeFilters[filterKey];
+
+        // Reset UI
+        if (filterKey === 'search') {
+            document.getElementById('searchInput').value = '';
+        } else if (filterKey === 'status') {
+            document.getElementById('statusFilter').value = '';
+        } else if (filterKey === 'service') {
+            document.getElementById('serviceFilter').value = '';
+        } else if (filterKey === 'dateFrom') {
+            document.getElementById('dateFrom').value = '';
+        } else if (filterKey === 'dateTo') {
+            document.getElementById('dateTo').value = '';
+        }
+
+        this.applyFilters();
+    },
+
+    clearFilters() {
+        this.activeFilters = {};
+        this.filteredData = this.allData;
+
+        // Reset all UI elements
+        document.getElementById('searchInput').value = '';
+        document.getElementById('statusFilter').value = '';
+        document.getElementById('serviceFilter').value = '';
+        document.getElementById('dateFrom').value = '';
+        document.getElementById('dateTo').value = '';
+
+        this.updateFilterChips();
+        this.updateResultsCount();
+        this.triggerUpdate();
+    },
+
+    updateResultsCount() {
+        const countDiv = document.getElementById('resultsCount');
+        const countNumber = document.getElementById('resultCountNumber');
+        
+        countNumber.textContent = this.filteredData.length;
+        countDiv.style.display = Object.keys(this.activeFilters).length > 0 ? 'block' : 'none';
+    },
+
+    triggerUpdate() {
+        // Trigger custom event that the page can listen to
+        window.dispatchEvent(new CustomEvent('filterUpdate', {
+            detail: { filteredData: this.filteredData }
+        }));
+    },
+
+    getFilteredData() {
+        return this.filteredData;
+    }
+};
+
+// Make available globally
+window.SearchFilter = SearchFilter;
+</script>

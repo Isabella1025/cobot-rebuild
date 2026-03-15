@@ -1,0 +1,265 @@
+/* Enhanced Bot UI Styles */
+
+/* Bot documents section */
+.bot-documents {
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(78, 0, 0, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid var(--burgundy-primary);
+}
+
+.documents-header {
+    font-weight: 600;
+    color: var(--burgundy-primary);
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.documents-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.document-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: white;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--burgundy-dark);
+    transition: all 0.2s;
+    border: 1px solid var(--cream-dark);
+}
+
+.document-item:hover {
+    background: var(--cream);
+    border-color: var(--burgundy-primary);
+    transform: translateX(5px);
+}
+
+.doc-icon {
+    font-size: 20px;
+}
+
+.doc-name {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.doc-action {
+    font-size: 12px;
+    color: var(--burgundy-light);
+    font-weight: 600;
+}
+
+/* Quick action buttons */
+.quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(78, 0, 0, 0.1);
+}
+
+.quick-action-btn {
+    padding: 8px 16px;
+    border: 2px solid var(--burgundy-primary);
+    background: white;
+    color: var(--burgundy-primary);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.quick-action-btn:hover {
+    background: var(--burgundy-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(78, 0, 0, 0.2);
+}
+
+.quick-action-btn:active {
+    transform: translateY(0);
+}
+
+/* Specific quick action button styles */
+.quick-action-appointment {
+    border-color: #27ae60;
+    color: #27ae60;
+}
+
+.quick-action-appointment:hover {
+    background: #27ae60;
+    color: white;
+}
+
+.quick-action-info {
+    border-color: #3498db;
+    color: #3498db;
+}
+
+.quick-action-info:hover {
+    background: #3498db;
+    color: white;
+}
+
+.quick-action-documents {
+    border-color: #9b59b6;
+    color: #9b59b6;
+}
+
+.quick-action-documents:hover {
+    background: #9b59b6;
+    color: white;
+}
+
+.quick-action-contact {
+    border-color: #e67e22;
+    color: #e67e22;
+}
+
+.quick-action-contact:hover {
+    background: #e67e22;
+    color: white;
+}
+
+/* Appointment suggestion banner */
+.appointment-suggestion {
+    margin-top: 15px;
+    padding: 15px;
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3d6 100%);
+    border-radius: 8px;
+    border: 2px solid #f39c12;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.suggestion-icon {
+    font-size: 32px;
+    flex-shrink: 0;
+}
+
+.suggestion-text {
+    flex: 1;
+    color: var(--burgundy-dark);
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.suggestion-btn {
+    padding: 10px 20px;
+    background: #f39c12;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.suggestion-btn:hover {
+    background: #e67e22;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+}
+
+/* Enhanced bot message styling */
+.bot-message.enhanced {
+    animation: slideInLeft 0.4s ease-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Loading state for quick actions */
+.quick-action-btn.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.quick-action-btn.loading::after {
+    content: '...';
+    animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .appointment-suggestion {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .suggestion-btn {
+        width: 100%;
+    }
+
+    .quick-actions {
+        flex-direction: column;
+    }
+
+    .quick-action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .document-item {
+        font-size: 12px;
+    }
+}
+
+/* Conversation memory indicator */
+.memory-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: rgba(78, 0, 0, 0.1);
+    border-radius: 12px;
+    font-size: 11px;
+    color: var(--burgundy-primary);
+    margin-bottom: 8px;
+}
+
+.memory-indicator::before {
+    content: '🧠';
+}

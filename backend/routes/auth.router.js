@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const express = require('express');
 const router = express.Router();
 const AuthService = require('../services/AuthService');
-const { query } = require('../config/database');  // IMPORTANT: Add this line!
+const { query } = require('../config/database');
 
 /**
  * @route   POST /api/auth/signup
@@ -69,6 +69,48 @@ router.post('/verify', async (req, res) => {
     }
 
     const result = await AuthService.verifyEmail(email, otp);
+
+    // Set session after successful verification
+    if (result.success && result.user) {
+      req.session.user = result.user;
+    }
+
+    res.json({
+      success: true,
+      data: result
+    });
+
+  } catch (error) {
+    console.error('Verification error:', error);
+    res.status(400).json({
+      success: false,
+      error: error.message || 'Verification failed'
+    });
+  }
+});
+
+/**
+ * @route   POST /api/auth/verify-otp
+ * @desc    Verify email with OTP (alias for compatibility)
+ * @access  Public
+ */
+router.post('/verify-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email and verification code are required'
+      });
+    }
+
+    const result = await AuthService.verifyEmail(email, otp);
+
+    // Set session after successful verification
+    if (result.success && result.user) {
+      req.session.user = result.user;
+    }
 
     res.json({
       success: true,
@@ -312,10 +354,6 @@ router.post('/staff-applications/:id/reject', async (req, res) => {
     });
   }
 });
-
-// ============================================
-// PASSWORD RESET ROUTES
-// ============================================
 
 /**
  * @route   POST /api/auth/forgot-password

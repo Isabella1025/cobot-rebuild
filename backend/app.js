@@ -9,7 +9,7 @@ const app = express();
 
 // Security middleware
 app.use(helmet({
-  contentSecurityPolicy: false, // We'll configure this later for production
+  contentSecurityPolicy: false, // This may 9need to be configured later when I am trying to host
 }));
 
 // CORS configuration
@@ -70,6 +70,7 @@ const authRouter = require('./routes/auth.router');
 const analyticsRouter = require('./routes/analytics.router');
 const notificationsRouter = require('./routes/notifications.router');
 const userRouter = require('./routes/user.router');
+const searchRouter = require('./routes/search.router');
 // const vectorStoreRouter = require('./routes/vectorStore.router');
 // const transcriptionRouter = require('./routes/transcription.router');
 
@@ -85,6 +86,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/user', userRouter);
+app.use('/api/search', searchRouter);
 // app.use('/api/files', fileRouter);
 // app.use('/api/vectorstores', vectorStoreRouter);
 // app.use('/api/transcription', transcriptionRouter);
