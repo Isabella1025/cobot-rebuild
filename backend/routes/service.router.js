@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Service = require('../models/Service');
+const { query } = require('../config/database');  
 
 /**
  * Service Router
@@ -14,12 +15,21 @@ const Service = require('../models/Service');
  */
 router.get('/', async (req, res) => {
   try {
-    const services = await Service.getAll();
+    // Fetch services with bot information
+    const services = await query(`
+      SELECT 
+        s.*,
+        sb.bot_name,
+        sb.id as bot_id_check
+      FROM services s
+      LEFT JOIN service_bots sb ON s.bot_id = sb.id
+      WHERE s.is_active = TRUE
+      ORDER BY s.id
+    `);
     
     res.json({
       success: true,
-      data: services,
-      count: services.length
+      data: services
     });
   } catch (error) {
     console.error('Error fetching services:', error);

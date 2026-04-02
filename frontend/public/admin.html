@@ -798,7 +798,7 @@
                 try {
                     // Upload file
                     const formData = new FormData();
-                    formData.append('file', file);
+                    formData.append('files', file);
                     formData.append('service_id', currentService.id);
 
                     const uploadResponse = await fetch(`${API_BASE}/files/upload`, {

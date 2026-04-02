@@ -1,16 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { query } = require('../config/database');
-
-// Helper function since we don't have queryOne
-async function queryOne(sql, params) {
-  const results = await query(sql, params);
-  return results && results.length > 0 ? results[0] : null;
-}
+const { query, queryOne } = require('../config/database');
 
 /**
  * @route   GET /api/channels/service/:serviceId
- * @desc    Get channels for a service (public + student's private bot chats)
+ * @desc    Get channels for a service (filtered by user access)
  * @access  Private
  */
 router.get('/service/:serviceId', async (req, res) => {
@@ -29,9 +23,7 @@ router.get('/service/:serviceId', async (req, res) => {
     let channels;
 
     if (userRole === 'student') {
-      // Students see: 
-      // 1. Public channels (general discussions)
-      // 2. Their own private bot chats
+      // Students see: public channels + their own private channels
       channels = await query(`
         SELECT DISTINCT
           sc.id,
@@ -39,11 +31,13 @@ router.get('/service/:serviceId', async (req, res) => {
           sc.service_id,
           sc.is_private,
           sc.channel_type,
-          sc.bot_id,
-          sb.bot_name,
-          (SELECT COUNT(*) FROM messages m WHERE m.channel_id = sc.id AND m.is_bot_message = FALSE) as my_message_count
+          sc.created_by,
+          sc.assigned_to,
+          staff.full_name as assigned_staff_name,
+          creator.full_name as creator_name
         FROM service_channels sc
-        LEFT JOIN service_bots sb ON sc.bot_id = sb.id
+        LEFT JOIN users staff ON sc.assigned_to = staff.id
+        LEFT JOIN users creator ON sc.created_by = creator.id
         LEFT JOIN channel_participants cp ON sc.id = cp.channel_id
         WHERE sc.service_id = ? 
           AND sc.is_active = TRUE
@@ -55,9 +49,7 @@ router.get('/service/:serviceId', async (req, res) => {
       `, [serviceId, userId]);
 
     } else if (userRole === 'staff' || userRole === 'service_admin') {
-      // Staff see: 
-      // 1. Public channels (to monitor)
-      // 2. All private bot chats (to see student conversations if needed)
+      // Staff see: public channels + all private channels for their service
       channels = await query(`
         SELECT DISTINCT
           sc.id,
@@ -65,13 +57,14 @@ router.get('/service/:serviceId', async (req, res) => {
           sc.service_id,
           sc.is_private,
           sc.channel_type,
-          sc.bot_id,
-          sb.bot_name,
+          sc.created_by,
+          sc.assigned_to,
           student.full_name as student_name,
-          (SELECT COUNT(*) FROM messages m WHERE m.channel_id = sc.id) as message_count
+          creator.full_name as creator_name,
+          (SELECT COUNT(*) FROM messages m WHERE m.channel_id = sc.id AND m.is_read = FALSE) as unread_count
         FROM service_channels sc
-        LEFT JOIN service_bots sb ON sc.bot_id = sb.id
         LEFT JOIN users student ON sc.created_by = student.id
+        LEFT JOIN users creator ON sc.created_by = creator.id
         WHERE sc.service_id = ? 
           AND sc.is_active = TRUE
         ORDER BY sc.is_private ASC, sc.created_at DESC
@@ -99,11 +92,11 @@ router.get('/service/:serviceId', async (req, res) => {
 });
 
 /**
- * @route   POST /api/channels/create-bot-chat
- * @desc    Create/get a private chat with a service bot
+ * @route   POST /api/channels/create-private
+ * @desc    Create a new private channel with a staff member
  * @access  Student
  */
-router.post('/create-bot-chat', async (req, res) => {
+router.post('/create-private', async (req, res) => {
   try {
     if (!req.session.user) {
       return res.status(401).json({
@@ -115,165 +108,100 @@ router.post('/create-bot-chat', async (req, res) => {
     if (req.session.user.role !== 'student') {
       return res.status(403).json({
         success: false,
-        error: 'Only students can create bot chats'
+        error: 'Only students can create private channels'
       });
     }
 
-    const { service_id, bot_id } = req.body;
+    const { service_id, staff_id } = req.body;
     const student_id = req.session.user.id;
 
     // Validate inputs
-    if (!service_id || !bot_id) {
+    if (!service_id || !staff_id) {
       return res.status(400).json({
         success: false,
-        error: 'Service and bot are required'
+        error: 'Service and staff member are required'
       });
     }
 
-    // Check if private bot chat already exists for this student
+    // Check if private channel already exists between this student and staff
     const existingChannel = await queryOne(`
       SELECT id, channel_name 
       FROM service_channels 
       WHERE service_id = ? 
-        AND bot_id = ?
         AND is_private = TRUE 
-        AND created_by = ?
-    `, [service_id, bot_id, student_id]);
+        AND created_by = ? 
+        AND assigned_to = ?
+    `, [service_id, student_id, staff_id]);
 
     if (existingChannel) {
       // Return existing channel
       return res.json({
         success: true,
-        message: 'Bot chat already exists',
-        data: { 
-          channel_id: existingChannel.id, 
-          channel_name: existingChannel.channel_name,
-          is_new: false
-        }
+        message: 'Private channel already exists',
+        data: { channel_id: existingChannel.id, channel_name: existingChannel.channel_name }
       });
     }
 
-    // Get bot and service names
-    const bot = await queryOne('SELECT bot_name FROM service_bots WHERE id = ?', [bot_id]);
+    // Get student and staff names
+    const student = await queryOne('SELECT full_name FROM users WHERE id = ?', [student_id]);
+    const staff = await queryOne('SELECT full_name FROM users WHERE id = ?', [staff_id]);
     const service = await queryOne('SELECT service_name FROM services WHERE id = ?', [service_id]);
 
-    if (!bot || !service) {
+    if (!student || !staff || !service) {
       return res.status(404).json({
         success: false,
-        error: 'Bot or service not found'
+        error: 'Student, staff, or service not found'
       });
     }
 
-    // Create private bot chat channel
-    const channelName = `Your Chat with ${bot.bot_name}`;
+    // Create private channel
+    const channelName = `Private: ${student.full_name} & ${staff.full_name}`;
     
     const result = await query(`
       INSERT INTO service_channels 
-        (channel_name, service_id, bot_id, is_private, channel_type, created_by, is_active, created_at)
-      VALUES (?, ?, ?, TRUE, 'private', ?, TRUE, NOW())
-    `, [channelName, service_id, bot_id, student_id]);
+        (channel_name, service_id, is_private, channel_type, created_by, assigned_to, is_active, created_at)
+      VALUES (?, ?, TRUE, 'private', ?, ?, TRUE, NOW())
+    `, [channelName, service_id, student_id, staff_id]);
 
     const channelId = result.insertId;
 
-    // Add student as sole participant
+    // Add student as participant
     await query(`
       INSERT INTO channel_participants (channel_id, user_id, role)
       VALUES (?, ?, 'student')
     `, [channelId, student_id]);
 
-    console.log(`✓ Private bot chat created: ${channelName} (ID: ${channelId}) for student ${student_id}`);
+    // Add staff as participant
+    await query(`
+      INSERT INTO channel_participants (channel_id, user_id, role)
+      VALUES (?, ?, 'staff')
+    `, [channelId, staff_id]);
+
+    console.log(`✓ Private channel created: ${channelName} (ID: ${channelId})`);
 
     res.json({
       success: true,
-      message: 'Bot chat created',
+      message: 'Private channel created',
       data: { 
         channel_id: channelId, 
         channel_name: channelName,
-        bot_name: bot.bot_name,
         service_name: service.service_name,
-        is_new: true
+        staff_name: staff.full_name
       }
     });
 
   } catch (error) {
-    console.error('Error creating bot chat:', error);
+    console.error('Error creating private channel:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to create bot chat'
-    });
-  }
-});
-
-/**
- * @route   GET /api/channels/:channelId
- * @desc    Get channel details by ID
- * @access  Private
- */
-router.get('/:channelId', async (req, res) => {
-  try {
-    if (!req.session.user) {
-      return res.status(401).json({
-        success: false,
-        error: 'Authentication required'
-      });
-    }
-
-    const { channelId } = req.params;
-    const userId = req.session.user.id;
-
-    // Get channel details
-    const results = await query(`
-      SELECT 
-        sc.*,
-        s.service_name,
-        sb.bot_name
-      FROM service_channels sc
-      LEFT JOIN services s ON sc.service_id = s.id
-      LEFT JOIN service_bots sb ON sc.bot_id = sb.id
-      WHERE sc.id = ?
-    `, [channelId]);
-
-    const channel = results && results.length > 0 ? results[0] : null;
-
-    if (!channel) {
-      return res.status(404).json({
-        success: false,
-        error: 'Channel not found'
-      });
-    }
-
-    // Check access for private channels
-    if (channel.is_private) {
-      const isParticipant = await query(`
-        SELECT id FROM channel_participants 
-        WHERE channel_id = ? AND user_id = ?
-      `, [channelId, userId]);
-
-      if (!isParticipant || isParticipant.length === 0) {
-        return res.status(403).json({
-          success: false,
-          error: 'Access denied to this private channel'
-        });
-      }
-    }
-
-    res.json({
-      success: true,
-      data: channel
-    });
-
-  } catch (error) {
-    console.error('Error fetching channel details:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch channel details'
+      error: 'Failed to create private channel'
     });
   }
 });
 
 /**
  * @route   GET /api/channels/:channelId/messages
- * @desc    Get messages for a channel (only if user has access)
+ * @desc    Get messages for a channel (only if user is participant)
  * @access  Private
  */
 router.get('/:channelId/messages', async (req, res) => {
@@ -289,9 +217,9 @@ router.get('/:channelId/messages', async (req, res) => {
     const userId = req.session.user.id;
     const userRole = req.session.user.role;
 
-    // Check if channel exists
+    // Check if channel is private
     const channel = await queryOne(`
-      SELECT is_private, created_by, service_id
+      SELECT is_private, created_by, assigned_to, service_id
       FROM service_channels 
       WHERE id = ?
     `, [channelId]);
@@ -305,23 +233,17 @@ router.get('/:channelId/messages', async (req, res) => {
 
     // Check access for private channels
     if (channel.is_private) {
-      // Students can only see their own private chats
-      if (userRole === 'student' && channel.created_by !== userId) {
+      // Check if user is a participant
+      const isParticipant = await queryOne(`
+        SELECT id FROM channel_participants 
+        WHERE channel_id = ? AND user_id = ?
+      `, [channelId, userId]);
+
+      if (!isParticipant && userRole !== 'service_admin') {
         return res.status(403).json({
           success: false,
-          error: 'You do not have access to this private chat'
+          error: 'You do not have access to this private channel'
         });
-      }
-
-      // Staff can see all private chats in their service
-      if (userRole === 'staff') {
-        const user = await queryOne('SELECT assigned_service_id FROM users WHERE id = ?', [userId]);
-        if (user && user.assigned_service_id !== channel.service_id) {
-          return res.status(403).json({
-            success: false,
-            error: 'Access denied'
-          });
-        }
       }
     }
 
@@ -353,7 +275,7 @@ router.get('/:channelId/messages', async (req, res) => {
 
 /**
  * @route   POST /api/channels/:channelId/join
- * @desc    Join a public channel
+ * @desc    Join a public channel (add as participant)
  * @access  Private
  */
 router.post('/:channelId/join', async (req, res) => {
@@ -386,7 +308,7 @@ router.post('/:channelId/join', async (req, res) => {
     if (channel.is_private) {
       return res.status(403).json({
         success: false,
-        error: 'Cannot join private bot chats'
+        error: 'Cannot join private channels'
       });
     }
 

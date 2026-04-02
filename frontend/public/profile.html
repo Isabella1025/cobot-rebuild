@@ -636,14 +636,14 @@
                         <div class="stat-label">Appointments</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-value" id="memberSince">2024</div>
-                        <div class="stat-label">Member Since</div>
+                        <div class="stat-value" id="secondStatValue">0</div>
+                        <div class="stat-label" id="secondStatLabel">—</div>
                     </div>
                 </div>
 
                 <!-- Quick Actions -->
                 <div class="quick-actions">
-                    <a href="/appointments.html" class="action-btn">
+                    <a href="/appointments.html" class="action-btn" id="bookAppointmentCard" style="display: none;">
                         <div class="icon">📅</div>
                         <div class="label">Book Appointment</div>
                     </a>
@@ -679,7 +679,7 @@
                             <input type="email" id="editEmail" class="form-control" disabled>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" id="studentIdField">
                             <label for="editStudentId">Student ID</label>
                             <input type="text" id="editStudentId" class="form-control" disabled>
                         </div>
@@ -763,11 +763,16 @@
                 document.getElementById('editEmail').value = currentUser.email || '';
                 document.getElementById('editStudentId').value = currentUser.student_id || '';
 
-                // Set member since
-                if (currentUser.created_at) {
-                    const year = new Date(currentUser.created_at).getFullYear();
-                    document.getElementById('memberSince').textContent = year;
+                // Show Book Appointment only for students
+                if (currentUser.role === 'student') {
+                    document.getElementById('bookAppointmentCard').style.display = 'block';
                 }
+
+                // Hide Student ID field for staff
+                if (currentUser.role === 'staff' || currentUser.role === 'service_admin') {
+                    document.getElementById('studentIdField').style.display = 'none';
+                }
+
 
             } catch (error) {
                 console.error('Failed to load profile:', error);
@@ -863,7 +868,11 @@
         // Load appointments
         async function loadAppointments() {
             try {
-                const response = await fetch(`${API_BASE}/appointments/my-appointments`, {
+                const user = JSON.parse(sessionStorage.getItem('user'));
+                const isStaff = user && (user.role === 'staff' || user.role === 'service_admin');
+                const endpoint = isStaff ? `${API_BASE}/appointments/my-assigned` : `${API_BASE}/appointments/my`;
+
+                const response = await fetch(endpoint, {
                     credentials: 'include'
                 });
 
@@ -871,9 +880,20 @@
 
                 if (data.success) {
                     const appointments = data.data || [];
-                    
-                    // Update count
+
+                    // Update counts
                     document.getElementById('appointmentCount').textContent = appointments.length;
+
+                    if (isStaff) {
+                        const pending = appointments.filter(a => a.status === 'pending').length;
+                        document.getElementById('secondStatValue').textContent = pending;
+                        document.getElementById('secondStatLabel').textContent = 'Pending Appointments';
+                    } else {
+                        const today = new Date().toISOString().split('T')[0];
+                        const upcoming = appointments.filter(a => a.status === 'approved' && a.appointment_date >= today).length;
+                        document.getElementById('secondStatValue').textContent = upcoming;
+                        document.getElementById('secondStatLabel').textContent = 'Upcoming Appointment(s)';
+                    }
 
                     // Render appointments
                     const list = document.getElementById('appointmentList');
@@ -958,7 +978,8 @@
             document.addEventListener('click', (e) => {
                 const dropdown = document.getElementById('notificationDropdown');
                 const bell = e.target.closest('.notification-bell');
-                if (!bell && dropdown.classList.contains('show')) {
+                const insideDropdown = e.target.closest('.notification-dropdown');
+                if (!bell && !insideDropdown && dropdown.classList.contains('show')) {
                     dropdown.classList.remove('show');
                 }
             });
@@ -1006,12 +1027,12 @@
 
         function renderNotifications() {
             const list = document.getElementById('notificationList');
-            
-            if (notifications.length === 0) {
+
+            if (notifications.length === 0 || notifications.every(n => n.read)) {
                 list.innerHTML = `
                     <div class="notification-empty">
                         <div class="notification-empty-icon">🔕</div>
-                        <p>No notifications yet</p>
+                        <p>No new notifications</p>
                     </div>
                 `;
                 return;
@@ -1036,9 +1057,18 @@
             }
         }
 
-        function markAllAsRead() {
+        async function markAllAsRead() {
             notifications.forEach(n => n.read = true);
             updateNotificationUI();
+
+            try {
+                await fetch(`${API_BASE}/notifications/mark-all-read`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            } catch (error) {
+                console.error('Failed to mark notifications as read on server:', error);
+            }
         }
 
         function saveNotifications() {

@@ -1,6 +1,5 @@
 const { query } = require('../config/database');
 const BotService = require('../services/BotService');
-const { createChatCompletion } = require('../config/openai');
 
 /**
  * Socket.IO Handler for Real-Time Chat
@@ -72,7 +71,7 @@ module.exports = (io) => {
           return;
         }
 
-        console.log(`📨 Message from ${userName} in channel ${channelId}:`, message);
+        console.log(`Message from ${userName} in channel ${channelId}:`, message);
         if (fileId) console.log(`  - Attached file: ${fileName}`);
 
         // Save message to database
@@ -105,120 +104,9 @@ module.exports = (io) => {
 
         console.log(`✓ Message ${messageId} broadcasted to ${channelRoom}`);
 
-        // ==========================================
-        // AUTO-BOT RESPONSE FOR PRIVATE CHANNELS
-        // ==========================================
-        
-        // Get channel details
-        const channelDetails = await query(`
-          SELECT 
-            sc.id,
-            sc.channel_name,
-            sc.is_private,
-            sc.bot_id,
-            sc.service_id,
-            sb.bot_name,
-            sb.system_prompt,
-            s.service_name
-          FROM service_channels sc
-          LEFT JOIN service_bots sb ON sc.bot_id = sb.id
-          LEFT JOIN services s ON sc.service_id = s.id
-          WHERE sc.id = ?
-        `, [channelId]);
-
-        const channel = channelDetails && channelDetails.length > 0 ? channelDetails[0] : null;
-
-        // Check if this is a private bot channel
-        if (channel && channel.is_private && channel.bot_id) {
-          console.log(`🤖 Auto-triggering ${channel.bot_name} response...`);
-
-          // Show typing indicator
-          io.to(channelRoom).emit('bot_typing', {
-            channelId,
-            botName: channel.bot_name
-          });
-
-          try {
-            // Get recent conversation history (last 10 messages)
-            const conversationHistory = await query(`
-              SELECT sender_id, message_text, is_bot_message
-              FROM messages
-              WHERE channel_id = ?
-              ORDER BY created_at DESC
-              LIMIT 10
-            `, [channelId]);
-
-            // Get the user's current message
-            const userMessage = message.trim();
-
-            // Build bot object for BotService
-            const bot = {
-              id: channel.bot_id,
-              bot_name: channel.bot_name,
-              system_prompt: channel.system_prompt,
-              service_id: channel.service_id || 1,  // Assuming service_id is in channel
-              service_name: channel.service_name || 'Student Services'
-            };
-
-            console.log(`🔍 Generating RAG-powered response for ${bot.bot_name}...`);
-
-            // Use BotService to generate response (includes RAG/vector store search)
-            const botResponseText = await BotService.generateResponse(
-              bot,
-              userMessage,
-              conversationHistory.reverse()  // Chronological order
-            );
-
-            console.log(`✓ RAG-powered response generated: ${botResponseText.substring(0, 100)}...`);
-
-            // Save bot's response to database
-            const botResult = await query(
-              `INSERT INTO messages (channel_id, sender_id, message_text, message_type, is_bot_message, created_at) 
-               VALUES (?, NULL, ?, 'text', TRUE, NOW())`,
-              [channelId, botResponseText]
-            );
-
-            const botMessageId = botResult.insertId;
-
-            // Fetch the complete bot message
-            const [botMessage] = await query(
-              `SELECT m.*, ? as sender_name
-               FROM messages m
-               WHERE m.id = ?`,
-              [channel.bot_name, botMessageId]
-            );
-
-            // Broadcast bot response
-            io.to(channelRoom).emit('new_message', botMessage);
-            io.to(channelRoom).emit('bot_stopped_typing', { channelId });
-
-            console.log(`✓ Bot response sent (ID: ${botMessageId})`);
-
-          } catch (botError) {
-            console.error('❌ Bot response error:', botError);
-            
-            // Send error message
-            io.to(channelRoom).emit('bot_stopped_typing', { channelId });
-            
-            const errorResult = await query(
-              `INSERT INTO messages (channel_id, sender_id, message_text, message_type, is_bot_message, created_at) 
-               VALUES (?, NULL, ?, 'text', TRUE, NOW())`,
-              [channelId, "I'm having trouble responding right now. Please try again in a moment."]
-            );
-
-            const [errorMessage] = await query(
-              `SELECT m.*, ? as sender_name
-               FROM messages m
-               WHERE m.id = ?`,
-              [channel.bot_name, errorResult.insertId]
-            );
-
-            io.to(channelRoom).emit('new_message', errorMessage);
-          }
-        }
-        // For public channels, still check for bot mentions (existing behavior)
-        else if (BotService.mentionsBot(message)) {
-          console.log('Bot mention detected in public channel - generating AI response...');
+        // Check if message mentions a bot and generate response
+        if (BotService.mentionsBot(message)) {
+          console.log('Bot mention detected - generating AI response...');
           
           // Show typing indicator
           io.to(channelRoom).emit('bot_typing', {
@@ -232,7 +120,7 @@ module.exports = (io) => {
               // Broadcast bot response
               io.to(channelRoom).emit('new_message', botMessage);
               console.log(`✓ Bot response sent to ${channelRoom}`);
-            }, fileId);
+            }, fileId); // Pass fileId for bot to analyze the file
           } catch (botError) {
             console.error('Error generating bot response:', botError);
           }
@@ -302,5 +190,5 @@ module.exports = (io) => {
     });
   });
 
-  console.log('✓ Socket.IO handlers initialized with auto-bot response');
+  console.log('✓ Socket.IO handlers initialized');
 };

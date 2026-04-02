@@ -4,11 +4,6 @@ const Appointment = require('../models/Appointment');
 const { query } = require('../config/database');
 const { requireAuth, requireRole, requireAppointmentAccess } = require('../middleware/permission.middleware');
 
-router.get('/test', (req, res) => {
-  console.log('TEST ROUTE HIT!');
-  res.json({ success: true, message: 'Router is working!' });
-});
-
 /**
  * @route   GET /api/appointments/staff/:serviceId
  * @desc    Get staff members for a service
@@ -20,14 +15,17 @@ router.get('/staff/:serviceId', async (req, res) => {
 
     const staff = await query(
       `SELECT 
-        ss.id,
-        ss.staff_role,
         u.id as staff_id,
         u.full_name,
-        u.email
+        u.email,
+        ss.staff_role,
+        u.staff_position
       FROM service_staff ss
-      LEFT JOIN users u ON ss.staff_id = u.id
-      WHERE ss.service_id = ? AND ss.is_active = TRUE
+      JOIN users u ON ss.staff_id = u.id
+      WHERE ss.service_id = ? 
+        AND ss.is_active = TRUE
+        AND u.account_status = 'active'
+        AND u.is_verified = TRUE
       ORDER BY u.full_name`,
       [serviceId]
     );
@@ -84,7 +82,7 @@ router.post('/', async (req, res) => {
       });
     }
 
-    const { service_id, appointment_date, appointment_time, reason, duration_minutes } = req.body;
+    const { service_id, appointment_date, appointment_time, reason, duration_minutes, assigned_staff_id } = req.body;
 
     // Validation
     if (!service_id || !appointment_date || !appointment_time) {
@@ -111,10 +109,61 @@ router.post('/', async (req, res) => {
       appointment_date,
       appointment_time,
       reason,
-      duration_minutes
+      duration_minutes,
+      assigned_staff_id: assigned_staff_id || null  // Include staff assignment
     });
 
     const appointment = await Appointment.getById(appointmentId);
+
+    // Notify assigned staff member (if one was selected)
+    try {
+      if (assigned_staff_id) {
+        // Get service name and student name
+        const appointmentDetails = await query(
+          `SELECT s.service_name, u.full_name as student_name
+           FROM appointments a
+           JOIN services s ON a.service_id = s.id
+           JOIN users u ON a.student_id = u.id
+           WHERE a.id = ?`,
+          [appointmentId]
+        );
+
+        if (appointmentDetails && appointmentDetails.length > 0) {
+          const { service_name, student_name } = appointmentDetails[0];
+
+          // Create notification for staff
+          await query(
+            `INSERT INTO notifications (user_id, type, title, message, icon, is_read, created_at)
+             VALUES (?, ?, ?, ?, ?, FALSE, NOW())`,
+            [
+              assigned_staff_id,
+              'appointment',
+              'New Appointment Request',
+              `${student_name} has requested an appointment with ${service_name} on ${appointment_date}`,
+              '📅'
+            ]
+          );
+
+          console.log(`✓ Notification created for staff ${assigned_staff_id}: New Appointment Request`);
+
+          // Send real-time notification via Socket.IO
+          const io = req.app.get('io');
+          if (io) {
+            io.to(`user_${assigned_staff_id}`).emit('notification', {
+              type: 'appointment',
+              title: 'New Appointment Request',
+              message: `${student_name} has requested an appointment with ${service_name}`,
+              icon: '📅',
+              timestamp: new Date(),
+              read: false
+            });
+            console.log(`✓ Socket.IO notification sent to staff user_${assigned_staff_id}`);
+          }
+        }
+      }
+    } catch (notificationError) {
+      console.error('Staff notification creation failed:', notificationError);
+    }
 
     res.json({
       success: true,
@@ -176,7 +225,7 @@ router.get('/service/:serviceId', async (req, res) => {
     }
 
     // Check if user is staff/admin
-    if (!['lecturer', 'admin', 'service_admin'].includes(req.session.user.role)) {
+    if (!['staff', 'service_admin', 'admin'].includes(req.session.user.role)) {
       return res.status(403).json({
         success: false,
         error: 'Access denied. Staff only.'
@@ -227,7 +276,7 @@ router.get('/:id', async (req, res) => {
 
     // Check authorization
     const isStudent = appointment.student_id === req.session.user.id;
-    const isStaff = ['lecturer', 'admin', 'service_admin'].includes(req.session.user.role);
+    const isStaff = ['staff', 'service_admin', 'admin'].includes(req.session.user.role);
 
     if (!isStudent && !isStaff) {
       return res.status(403).json({
@@ -265,7 +314,7 @@ router.put('/:id/status', async (req, res) => {
     }
 
     // Check if user is staff/admin
-    if (!['lecturer', 'admin', 'service_admin'].includes(req.session.user.role)) {
+    if (!['staff', 'service_admin', 'admin'].includes(req.session.user.role)) {
       return res.status(403).json({
         success: false,
         error: 'Access denied. Staff only.'
@@ -287,6 +336,69 @@ router.put('/:id/status', async (req, res) => {
       req.session.user.id,
       notes
     );
+
+    // Try to create notification (don't break if it fails)
+    try {
+      // Get appointment details to find the student
+      const appointmentDetails = await query(
+        `SELECT a.student_id, u.full_name, s.service_name 
+         FROM appointments a
+         JOIN users u ON a.student_id = u.id
+         JOIN services s ON a.service_id = s.id
+         WHERE a.id = ?`,
+        [req.params.id]
+      );
+
+      if (appointmentDetails && appointmentDetails.length > 0) {
+        const studentId = appointmentDetails[0].student_id;
+        const serviceName = appointmentDetails[0].service_name;
+
+        // Create notification for student
+        let notificationTitle = '';
+        let notificationMessage = '';
+        let notificationIcon = '';
+
+        if (status === 'approved') {
+          notificationTitle = 'Appointment Approved';
+          notificationMessage = `Your appointment with ${serviceName} has been approved`;
+          notificationIcon = '✅';
+        } else if (status === 'declined') {
+          notificationTitle = 'Appointment Declined';
+          notificationMessage = `Your appointment with ${serviceName} has been declined`;
+          notificationIcon = '❌';
+        } else if (status === 'completed') {
+          notificationTitle = 'Appointment Completed';
+          notificationMessage = `Your appointment with ${serviceName} has been completed`;
+          notificationIcon = '✔️';
+        }
+
+        // Insert notification into database
+        await query(
+          `INSERT INTO notifications (user_id, type, title, message, icon, is_read, created_at)
+           VALUES (?, ?, ?, ?, ?, FALSE, NOW())`,
+          [studentId, 'appointment', notificationTitle, notificationMessage, notificationIcon]
+        );
+
+        console.log(`✓ Notification created for user ${studentId}: ${notificationTitle}`);
+
+        // Send real-time notification via Socket.IO
+        const io = req.app.get('io');
+        if (io) {
+          io.to(`user_${studentId}`).emit('notification', {
+            type: 'appointment',
+            title: notificationTitle,
+            message: notificationMessage,
+            icon: notificationIcon,
+            timestamp: new Date(),
+            read: false
+          });
+          console.log(`✓ Socket.IO notification sent to user_${studentId}`);
+        }
+      }
+    } catch (notificationError) {
+      // Log error but don't fail the appointment update
+      console.error('Notification creation failed:', notificationError);
+    }
 
     res.json({
       success: true,
@@ -372,6 +484,56 @@ router.put('/:id/reschedule', async (req, res) => {
 });
 
 /**
+ * @route   DELETE /api/appointments/:id
+ * @desc    Cancel appointment
+ * @access  Student (owner) or Staff
+ */
+router.delete('/:id', async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication required'
+      });
+    }
+
+    const appointment = await Appointment.getById(req.params.id);
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        error: 'Appointment not found'
+      });
+    }
+
+    // Check authorization
+    const isStudent = appointment.student_id === req.session.user.id;
+    const isStaff = ['staff', 'service_admin', 'admin'].includes(req.session.user.role);
+
+    if (!isStudent && !isStaff) {
+      return res.status(403).json({
+        success: false,
+        error: 'Access denied'
+      });
+    }
+
+    await Appointment.cancel(req.params.id);
+
+    res.json({
+      success: true,
+      message: 'Appointment cancelled successfully'
+    });
+
+  } catch (error) {
+    console.error('Error cancelling appointment:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to cancel appointment'
+    });
+  }
+});
+
+/**
  * @route   GET /api/appointments/my-appointments
  * @desc    Get current user's appointments (for profile page)
  * @access  Private
@@ -412,56 +574,5 @@ router.get('/my-appointments', async (req, res) => {
     });
   }
 });
-
-/**
- * @route   DELETE /api/appointments/:id
- * @desc    Cancel appointment
- * @access  Student (owner) or Staff
- */
-router.delete('/:id', async (req, res) => {
-  try {
-    if (!req.session.user) {
-      return res.status(401).json({
-        success: false,
-        error: 'Authentication required'
-      });
-    }
-
-    const appointment = await Appointment.getById(req.params.id);
-
-    if (!appointment) {
-      return res.status(404).json({
-        success: false,
-        error: 'Appointment not found'
-      });
-    }
-
-    // Check authorization
-    const isStudent = appointment.student_id === req.session.user.id;
-    const isStaff = ['lecturer', 'admin', 'service_admin'].includes(req.session.user.role);
-
-    if (!isStudent && !isStaff) {
-      return res.status(403).json({
-        success: false,
-        error: 'Access denied'
-      });
-    }
-
-    await Appointment.cancel(req.params.id);
-
-    res.json({
-      success: true,
-      message: 'Appointment cancelled successfully'
-    });
-
-  } catch (error) {
-    console.error('Error cancelling appointment:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to cancel appointment'
-    });
-  }
-});
-
 
 module.exports = router;

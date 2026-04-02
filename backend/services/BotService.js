@@ -182,7 +182,7 @@ Use this information to answer questions accurately. If the question cannot be a
       // Call OpenAI - don't pass temperature for GPT-5 compatibility
       const response = await createChatCompletion(messages, {
         model: bot.model || 'gpt-5-mini',
-        max_tokens: 500
+        max_tokens: 2000
       });
 
       console.log('Full OpenAI response:', JSON.stringify(response, null, 2));

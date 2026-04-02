@@ -575,3 +575,32 @@ module.exports = AuthService;
 
 
 
+async function handleLogin(e) {
+  e.preventDefault();
+  
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+
+  const response = await fetch('http://localhost:3000/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await response.json();
+
+  if (data.success) {
+    // Store user data in session storage
+    sessionStorage.setItem('user', JSON.stringify(data.data || data.user));
+    
+    // Redirect based on role
+    if (data.data.role === 'service_admin') {
+      window.location.href = '/admin.html';
+    } else {
+      window.location.href = '/services.html';
+    }
+  } else {
+    showAlert(data.error, 'error');
+  }
+}

@@ -794,6 +794,60 @@
                 box-shadow: 0 4px 12px rgba(78, 0, 0, 0.3) !important;
             }
         }
+
+        /* Bot message formatting */
+        .message-text.bot-formatted {
+            line-height: 1.8;
+            white-space: normal;
+        }
+
+        /* Bold headers in bot messages */
+        .message-text.bot-formatted strong {
+            color: #2d3748;
+            font-weight: 700;
+            font-size: 15px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        /* Numbered list items */
+        .bot-list-item {
+            margin-top: 20px;
+            margin-bottom: 16px;
+            padding-left: 8px;
+        }
+
+        .bot-list-item:first-child {
+            margin-top: 12px;
+        }
+
+        /* Description text under each item */
+        .bot-description {
+            display: block;
+            color: #4a5568;
+            margin-top: 6px;
+            margin-left: 20px;
+            line-height: 1.7;
+        }
+
+        /* Line breaks */
+        .message-text.bot-formatted br {
+            display: block;
+            content: "";
+            margin: 6px 0;
+        }
+
+        /* Better spacing for bot messages */
+        .message.bot .message-text {
+            padding: 8px 0;
+            font-size: 14.5px;
+            color: #1a202c;
+        }
+
+        /* First paragraph */
+        .message.bot .message-text.bot-formatted {
+            padding-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -946,49 +1000,117 @@
         // Load channels
         async function loadChannels() {
             try {
-                const response = await fetch(`${API_BASE}/channels`, {
-                    credentials: 'include'
-                });
-
-                if (!response.ok) throw new Error('Failed to load channels');
-
-                const data = await response.json();
-                const channels = data.data || [];
-
-                const channelsList = document.getElementById('channelsList');
-                channelsList.innerHTML = '';
-
-                if (channels.length === 0) {
-                    channelsList.innerHTML = '<div class="loading">No channels available</div>';
+                console.log('Loading channels...');
+                
+                const user = JSON.parse(sessionStorage.getItem('user'));
+                if (!user) {
+                    window.location.href = '/';
                     return;
                 }
 
-                channels.forEach(channel => {
-                    const item = document.createElement('div');
-                    item.className = 'channel-item';
-                    item.dataset.channelId = channel.id;
-                    item.onclick = (e) => loadChannel(channel.id, e);
-                    
-                    item.innerHTML = `
-                        <div class="channel-name">${channel.channel_name}</div>
-                        <div class="channel-service">${channel.service_name}</div>
-                    `;
-                    
-                    channelsList.appendChild(item);
+                // Get all services
+                const servicesResponse = await fetch(`${API_BASE}/services`, {
+                    credentials: 'include'
                 });
-
-                // Auto-select channel from URL
-                const channelId = getUrlParameter('channel');
+                
+                if (!servicesResponse.ok) {
+                    throw new Error('Failed to load services');
+                }
+                
+                const servicesData = await servicesResponse.json();
+                const services = servicesData.data || [];
+                
+                // Get channels for each service
+                let allChannels = [];
+                for (let service of services) {
+                    const channelsResponse = await fetch(`${API_BASE}/channels/service/${service.id}`, {
+                        credentials: 'include'
+                    });
+                    
+                    if (channelsResponse.ok) {
+                        const channelsData = await channelsResponse.json();
+                        const serviceChannels = (channelsData.data || []).map(ch => ({
+                            ...ch,
+                            service_name: service.service_name
+                        }));
+                        allChannels = allChannels.concat(serviceChannels);
+                    }
+                }
+                
+                console.log('Loaded channels:', allChannels);
+                
+                // Display channels in sidebar
+                displayChannelList(allChannels);
+                
+                // Load current channel if specified in URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const channelId = urlParams.get('channel');
+                
                 if (channelId) {
                     loadChannel(parseInt(channelId));
                 }
+                
             } catch (error) {
                 console.error('Error loading channels:', error);
-                document.getElementById('channelsList').innerHTML = 
-                    '<div class="loading">Error loading channels</div>';
+                alert('Failed to load channels. Please refresh the page.');
             }
         }
 
+        /**
+         * Display channels in the sidebar
+         */
+        function displayChannelList(channels) {
+            const channelsList = document.getElementById('channelsList');
+            
+            if (!channels || channels.length === 0) {
+                channelsList.innerHTML = `
+                    <div class="empty-state">
+                        <p>No channels available</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Group channels by service
+            const channelsByService = {};
+            channels.forEach(channel => {
+                const serviceName = channel.service_name || 'Other';
+                if (!channelsByService[serviceName]) {
+                    channelsByService[serviceName] = [];
+                }
+                channelsByService[serviceName].push(channel);
+            });
+            
+            // Build HTML
+            let html = '';
+            
+            Object.keys(channelsByService).forEach(serviceName => {
+                const serviceChannels = channelsByService[serviceName];
+                
+                html += `
+                    <div class="channel-group">
+                        <div class="channel-group-title">${serviceName}</div>
+                `;
+                
+                serviceChannels.forEach(channel => {
+                    const icon = channel.is_private ? '🔒' : '📢';
+                    const channelClass = channel.is_private ? 'private' : 'public';
+                    
+                    html += `
+                        <div class="channel-item ${channelClass}" 
+                            data-channel-id="${channel.id}"
+                            onclick="loadChannel(${channel.id}, event)">
+                            <span class="channel-icon">${icon}</span>
+                            <span class="channel-name">${channel.channel_name}</span>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>'; // Close channel-group
+            });
+            
+            channelsList.innerHTML = html;
+        }
         // Load channel and messages
         async function loadChannel(channelId, event = null) {
             try {
@@ -1072,7 +1194,35 @@
             }
         }
 
-        // Display a message
+        /**
+         * Format bot message text with proper styling
+         */
+        function formatBotMessage(text) {
+            if (!text) return '';
+            
+            let formatted = text;
+            
+            // Remove colons after numbered items (e.g., "1. **Title**: text" -> "1. **Title**<br>text")
+            formatted = formatted.replace(/(\d+)\.\s+\*\*([^*]+)\*\*:\s*/g, '$1. **$2**<br>');
+            
+            // Convert **bold** to <strong>
+            formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            
+            // Add extra spacing before numbered items (for visual separation)
+            formatted = formatted.replace(/(\d+)\.\s+<strong>/g, '<div class="bot-list-item">$1. <strong>');
+            
+            // Close the div after the description
+            formatted = formatted.replace(/<\/strong><br>(.+?)(?=<div class="bot-list-item">|\d+\.\s|$)/g, '</strong><br><span class="bot-description">$1</span></div>');
+            
+            // Convert remaining line breaks
+            formatted = formatted.replace(/\n/g, '<br>');
+            
+            // Clean up multiple breaks
+            formatted = formatted.replace(/(<br>\s*){3,}/g, '<br><br>');
+            
+            return formatted;
+        }
+
         function displayMessage(message, animate = true) {
             const chatMessages = document.getElementById('chatMessages');
             
@@ -1119,6 +1269,16 @@
                 `;
             }
 
+            // Format message text based on whether it's from bot or user
+            let messageTextHTML;
+            if (message.is_bot_message) {
+                // Bot messages get formatted with HTML
+                messageTextHTML = `<div class="message-text bot-formatted">${formatBotMessage(message.message_text)}</div>`;
+            } else {
+                // User messages stay as plain text (for security)
+                messageTextHTML = `<div class="message-text">${escapeHtml(message.message_text)}</div>`;
+            }
+
             messageDiv.innerHTML = `
                 <div class="message-avatar">${initial}</div>
                 <div class="message-content">
@@ -1127,7 +1287,7 @@
                         ${message.is_bot_message ? '<span class="message-badge bot">BOT</span>' : ''}
                         <span class="message-time">${timestamp}</span>
                     </div>
-                    <div class="message-text">${escapeHtml(message.message_text)}</div>
+                    ${messageTextHTML}
                     ${fileHTML}
                 </div>
             `;

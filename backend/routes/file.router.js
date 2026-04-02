@@ -100,6 +100,7 @@ router.post('/upload', upload.array('files', 10), async (req, res) => {
   }
 });
 
+
 /**
  * @route   POST /api/files/upload-chat
  * @desc    Upload single file in chat

@@ -681,6 +681,136 @@
         .icon-btn.hidden {
             display: none;
         }
+
+        /* Channel categories */
+        .channel-category {
+            margin-bottom: 20px;
+        }
+
+        .category-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bot-chat-info {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+        /* Channel list */
+        .channel-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+
+        .channel-item:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+            transform: translateX(3px);
+        }
+
+        .public-channel {
+            background: #f0f9ff;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .public-channel:hover {
+            background: #e0f2fe;
+        }
+
+        .private-channel {
+            background: #fef3c7;
+            border-left: 3px solid #f59e0b;
+        }
+
+        .private-channel:hover {
+            background: #fef08a;
+        }
+
+        .channel-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .channel-name {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1a202c;
+        }
+
+        .channel-arrow {
+            font-size: 14px;
+            color: #a0aec0;
+            transition: transform 0.2s;
+        }
+
+        .channel-item:hover .channel-arrow {
+            transform: translateX(3px);
+        }
+
+        /* Create bot chat button */
+        .create-bot-chat-btn {
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+        }
+
+        .create-bot-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        .create-bot-chat-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-icon {
+            font-size: 18px;
+        }
+
+        .spinner {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -800,6 +930,128 @@
             `;
         }
 
+        /**
+         * Display channels with public/private separation
+         */
+        function displayChannels(service) {
+            const channels = service.channels || [];
+            
+            // Separate public and private channels
+            const publicChannels = channels.filter(c => !c.is_private);
+            const privateChats = channels.filter(c => c.is_private);
+            
+            let channelsHTML = '<div class="channels-section">';
+            
+            // PUBLIC CHANNELS SECTION
+            if (publicChannels.length > 0) {
+                channelsHTML += `
+                    <div class="channel-category">
+                        <div class="category-title">📢 General Discussion</div>
+                        <div class="channel-list">
+                            ${publicChannels.map(channel => `
+                                <div class="channel-item public-channel" onclick="openChannel(${channel.id})">
+                                    <span class="channel-icon">📢</span>
+                                    <span class="channel-name">${channel.channel_name}</span>
+                                    <span class="channel-arrow">→</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // PRIVATE BOT CHAT SECTION
+            channelsHTML += `
+                <div class="channel-category">
+                    <div class="category-title">🤖 Private AI Assistant</div>
+                    <div class="bot-chat-info">Ask questions privately - your conversation is just between you and the AI</div>
+            `;
+            
+            // Show existing bot chat or create button
+            if (privateChats.length > 0) {
+                channelsHTML += `
+                    <div class="channel-list">
+                        ${privateChats.map(chat => `
+                            <div class="channel-item private-channel" onclick="openChannel(${chat.id})">
+                                <span class="channel-icon">🔒</span>
+                                <span class="channel-name">${chat.channel_name}</span>
+                                <span class="channel-arrow">→</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                // No bot chat yet - show create button
+                channelsHTML += `
+                    <button class="create-bot-chat-btn" onclick="event.stopPropagation(); createBotChat(${service.id}, ${service.bot_id || 1})">
+                        <span class="btn-icon">💬</span>
+                        Start Chat with ${service.bot_name || service.service_name + ' Bot'}
+                    </button>
+                `;
+            }
+            
+            channelsHTML += '</div></div>'; // Close sections
+            return channelsHTML;
+        }
+
+        /**
+         * Create a private bot chat
+         */
+        async function createBotChat(serviceId, botId) {
+            try {
+                const btn = event.target.closest('button');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner">⏳</span> Creating chat...';
+                btn.disabled = true;
+                
+                const response = await fetch(`${API_BASE}/channels/create-bot-chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        service_id: serviceId,
+                        bot_id: botId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Redirect to the new bot chat
+                    window.location.href = `/chat.html?channel=${data.data.channel_id}`;
+                } else {
+                    alert('Failed to create bot chat: ' + data.error);
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                }
+                
+            } catch (error) {
+                console.error('Error creating bot chat:', error);
+                alert('Failed to create bot chat. Please try again.');
+                const btn = event.target.closest('button');
+                btn.disabled = false;
+            }
+        }
+
+        /**
+         * Fetch channels for each service
+         */
+        async function fetchChannelsForService(serviceId) {
+            try {
+                const response = await fetch(`${API_BASE}/channels/service/${serviceId}`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.data || [];
+                }
+            } catch (error) {
+                console.error('Error fetching channels:', error);
+            }
+            return [];
+        }
+
         // Load services
         async function loadServices() {
             console.log('Loading services...');
@@ -827,9 +1079,15 @@
 
                 const data = await response.json();
                 console.log('Services data:', data);
-                
+
                 if (data.success && data.data.length > 0) {
-                    displayServices(data.data, user);
+                    // Fetch channels for each service
+                    const services = data.data;
+                    for (let service of services) {
+                        service.channels = await fetchChannelsForService(service.id);
+                    }
+                    
+                    displayServices(services, user);
                 } else {
                     console.log('No services found');
                     displayEmptyState();
@@ -853,23 +1111,8 @@
             const servicesHTML = servicesToShow.map(service => {
                 const config = serviceConfig[service.service_type] || { icon: '🎓', color: '#667eea', name: service.service_name };
                 
-                // Build channels list
-                let channelsHTML = '';
-                if (service.channels && service.channels.length > 0) {
-                    channelsHTML = `
-                        <div class="channels-section">
-                            <div class="channels-title">Available Channels</div>
-                            <div class="channel-list">
-                                ${service.channels.map(channel => `
-                                    <div class="channel-item" onclick="openChannel(${channel.id})">
-                                        <span class="channel-name">${channel.channel_name}</span>
-                                        <span class="channel-arrow">→</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                }
+                // Build channels list using new hybrid display
+                const channelsHTML = displayChannels(service);
 
                 // Build action buttons based on role
                 let actionsHTML = '';
@@ -879,11 +1122,6 @@
                         <a href="/appointments.html?service=${service.id}" class="action-btn btn-primary">
                             📅 Book Appointment
                         </a>
-                        ${service.channels && service.channels.length > 0 ? `
-                            <a href="/chat.html?channel=${service.channels[0].id}" class="action-btn btn-secondary">
-                                💬 Start Chat
-                            </a>
-                        ` : ''}
                     `;
                 } else if (user.role === 'staff' || user.role === 'service_admin' || user.role === 'lecturer') {
                     actionsHTML = `
@@ -958,6 +1196,7 @@
                 console.error('Logout error:', error);
             } finally {
                 sessionStorage.clear();
+                localStorage.removeItem('notifications'); // Clear notification cache
                 window.location.href = '/';
             }
         }
@@ -973,27 +1212,20 @@
         let unreadCount = 0;
 
         function initNotifications() {
-            // Load from localStorage
-            const saved = localStorage.getItem('notifications');
-            if (saved) {
-                try {
-                    notifications = JSON.parse(saved);
-                    updateNotificationUI();
-                } catch (e) {
-                    console.error('Failed to load notifications:', e);
-                }
-            }
-
+            // DON'T load from localStorage - always fetch fresh from server
+            // This ensures each user only sees their own notifications
+            
             // Close dropdown when clicking outside
             document.addEventListener('click', (e) => {
                 const dropdown = document.getElementById('notificationDropdown');
                 const bell = e.target.closest('.notification-bell');
-                if (!bell && dropdown.classList.contains('show')) {
+                const insideDropdown = e.target.closest('.notification-dropdown');
+                if (!bell && !insideDropdown && dropdown.classList.contains('show')) {
                     dropdown.classList.remove('show');
                 }
             });
 
-            // Fetch notifications from server
+            // Fetch notifications from server immediately
             fetchNotifications();
         }
 
@@ -1008,6 +1240,7 @@
                     if (data.success && data.data) {
                         notifications = data.data;
                         updateNotificationUI();
+                        // DON'T save to localStorage - notifications are user-specific
                     }
                 }
             } catch (error) {
@@ -1039,12 +1272,12 @@
 
         function renderNotifications() {
             const list = document.getElementById('notificationList');
-            
-            if (notifications.length === 0) {
+
+            if (notifications.length === 0 || notifications.every(n => n.read)) {
                 list.innerHTML = `
                     <div class="notification-empty">
                         <div class="notification-empty-icon">🔕</div>
-                        <p>No notifications yet</p>
+                        <p>No new notifications</p>
                     </div>
                 `;
                 return;
@@ -1069,14 +1302,23 @@
             }
         }
 
-        function markAllAsRead() {
+        async function markAllAsRead() {
             notifications.forEach(n => n.read = true);
             updateNotificationUI();
+
+            try {
+                await fetch('http://localhost:3000/api/notifications/mark-all-read', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            } catch (error) {
+                console.error('Failed to mark notifications as read on server:', error);
+            }
         }
 
         function saveNotifications() {
             try {
-                localStorage.setItem('notifications', JSON.stringify(notifications));
+                // localStorage.setItem('notifications', JSON.stringify(notifications));
             } catch (error) {
                 console.error('Failed to save notifications:', error);
             }
