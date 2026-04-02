@@ -108,7 +108,7 @@
             output.textContent = 'Loading...';
             
             try {
-                const response = await fetch('http://localhost:3000/api/services', {
+                const response = await fetch('window.location.origin/api/services', {
                     credentials: 'include'
                 });
                 
@@ -127,7 +127,7 @@
             output.textContent = 'Loading...';
             
             try {
-                const response = await fetch('http://localhost:3000/api/auth/check', {
+                const response = await fetch('window.location.origin/api/auth/check', {
                     credentials: 'include'
                 });
                 

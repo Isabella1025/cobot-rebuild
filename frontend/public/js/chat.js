@@ -521,7 +521,7 @@ EnhancedBotUI.init(currentServiceId, currentChannelId);
 
 // When sending message to bot, use enhanced response
 async function sendBotMessage(message) {
-    const response = await fetch('http://localhost:3000/api/bot/enhanced-chat', {
+    const response = await fetch('window.location.origin/api/bot/enhanced-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

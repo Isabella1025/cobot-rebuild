@@ -250,7 +250,7 @@
 
         async loadNotifications() {
             try {
-                const response = await fetch('http://localhost:3000/api/notifications', {
+                const response = await fetch('window.location.origin/api/notifications', {
                     credentials: 'include'
                 });
                 
@@ -368,7 +368,7 @@
 
     // Initialize when socket is available
     if (typeof io !== 'undefined') {
-        const socket = io('http://localhost:3000');
+        const socket = io('window.location.origin');
         NotificationSystem.init(socket);
     }
 </script>

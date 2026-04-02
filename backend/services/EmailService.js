@@ -148,7 +148,7 @@ class EmailService {
    */
   async sendPasswordReset(toEmail, resetToken, userName = '') {
     try {
-      const resetUrl = `${process.env.APP_URL || 'http://localhost:3000'}/reset-password.html?token=${resetToken}`;
+      const resetUrl = `${process.env.APP_URL || 'window.location.origin'}/reset-password.html?token=${resetToken}`;
 
       const mailOptions = {
         from: {
@@ -366,7 +366,7 @@ class EmailService {
                 </div>
                 
                 <div style="text-align: center;">
-                  <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}" class="button">
+                  <a href="${process.env.FRONTEND_URL || 'window.location.origin'}" class="button">
                     Go to Login
                   </a>
                 </div>

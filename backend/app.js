@@ -18,7 +18,7 @@ app.use(cors({
     if (!origin) return callback(null, true);
     
     const allowedOrigins = [
-      'http://localhost:3000',
+      'window.location.origin',
       /\.railway\.app$/,  // Allow all Railway domains
       /\.up\.railway\.app$/  // Railway's newer domain format
     ];

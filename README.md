@@ -79,7 +79,7 @@ npm run dev
 
 6. **Access the application**
 ```
-http://localhost:3000
+window.location.origin
 ```
 
 For detailed setup instructions, see [SETUP.md](SETUP.md)

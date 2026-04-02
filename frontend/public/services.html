@@ -877,7 +877,7 @@
         console.log('Current URL:', window.location.href);
         console.log('Session storage:', sessionStorage.getItem('user'));
         
-        const API_BASE = 'http://localhost:3000/api';
+        const API_BASE = 'window.location.origin/api';
 
         const serviceConfig = {
             'CAREER': { icon: '💼', color: '#3498db', name: 'Career Services' },
@@ -1231,7 +1231,7 @@
 
         async function fetchNotifications() {
             try {
-                const response = await fetch('http://localhost:3000/api/notifications', {
+                const response = await fetch('window.location.origin/api/notifications', {
                     credentials: 'include'
                 });
                 
@@ -1307,7 +1307,7 @@
             updateNotificationUI();
 
             try {
-                await fetch('http://localhost:3000/api/notifications/mark-all-read', {
+                await fetch('window.location.origin/api/notifications/mark-all-read', {
                     method: 'POST',
                     credentials: 'include'
                 });

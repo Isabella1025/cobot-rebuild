@@ -136,7 +136,7 @@ const EnhancedBotUI = {
       // Show loading state
       this.showActionLoading(action);
 
-      const response = await fetch('http://localhost:3000/api/bot/quick-action', {
+      const response = await fetch('window.location.origin/api/bot/quick-action', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

@@ -15,7 +15,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Uploaded files
-uploads/
+uploads/ 
 !uploads/.gitkeep
 
 # IDE and Editor files
