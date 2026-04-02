@@ -791,14 +791,23 @@
         async function loadSearchFilter() {
             const response = await fetch('/search-filter-component.html');
             const html = await response.text();
-            document.getElementById('searchFilterContainer').innerHTML = html;
-            
+            const container = document.getElementById('searchFilterContainer');
+            container.innerHTML = html;
+
+            // Re-execute scripts injected via innerHTML (they don't run automatically)
+            container.querySelectorAll('script').forEach(oldScript => {
+                const newScript = document.createElement('script');
+                newScript.textContent = oldScript.textContent;
+                document.body.appendChild(newScript);
+                newScript.remove();
+            });
+
             // Get services for filter dropdown
             const servicesResp = await fetch(`${window.location.origin}/api/services`, {
                 credentials: 'include'
             });
             const servicesData = await servicesResp.json();
-            
+
             // Initialize search filter with your appointments data
             SearchFilter.init(allAppointments, servicesData.data);
         }
