@@ -1,5 +1,5 @@
 // CampusAid Authentication Handler
-const API_BASE = 'window.location.origin/api';
+const API_BASE = `${window.location.origin}/api`;
 
 // Check for existing session on page load
 async function checkExistingSession() {
