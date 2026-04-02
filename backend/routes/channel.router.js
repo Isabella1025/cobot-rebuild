@@ -65,6 +65,7 @@ router.get('/service/:serviceId', async (req, res) => {
           sc.service_id,
           sc.is_private,
           sc.channel_type,
+          sc.created_at,
           sc.bot_id,
           sb.bot_name,
           student.full_name as student_name,
