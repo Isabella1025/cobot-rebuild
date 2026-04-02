@@ -1231,7 +1231,7 @@
 
         async function fetchNotifications() {
             try {
-                const response = await fetch('window.location.origin/api/notifications', {
+                const response = await fetch(`${window.location.origin}/api/notifications`, {
                     credentials: 'include'
                 });
                 
@@ -1307,7 +1307,7 @@
             updateNotificationUI();
 
             try {
-                await fetch('window.location.origin/api/notifications/mark-all-read', {
+                await fetch(`${window.location.origin}/api/notifications/mark-all-read`, {
                     method: 'POST',
                     credentials: 'include'
                 });
