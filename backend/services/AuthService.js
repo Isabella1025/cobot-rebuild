@@ -503,10 +503,10 @@ class AuthService {
         [reviewerId, notes, applicationId]
       );
 
-      // Update user account status and activate
+      // Update user account status and mark as verified (admin approval replaces email verification for staff)
       await query(
-        `UPDATE users 
-         SET account_status = 'active'
+        `UPDATE users
+         SET account_status = 'active', is_verified = TRUE
          WHERE id = ?`,
         [application.user_id]
       );
