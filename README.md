@@ -1,172 +1,220 @@
-# Cobot - AI-Powered Academic Collaboration Platform
+# CampusAid 🎓
+### A Centralized Intelligent Platform for Navigating Student Support Services
 
-An intelligent academic collaboration platform that enables service_admins to create course-specific AI bots trained on course materials, facilitating real-time student-bot-service_admin interactions.
-
-## 🎯 Project Overview
+> Built for Ashesi University | Applied Project | B.Sc. Computer Science
 
 **Student:** Isabella Tsikata  
-**Supervisor:** Dennis Owusu  
-**Institution:** Ashesi University
+**Supervisor:** Mr. Dennis Owusu  
+**Institution:** Ashesi University  
+**Year:** 2026
 
-Cobot addresses the gap in personalized, course-aware AI support for higher education. Unlike generic AI tools, Cobot allows service_admins to train AI bots specifically on their course content, providing students with accurate, contextual assistance 24/7.
+🌐 **Live App:** [https://campus-aid-production.up.railway.app/](https://campus-aid-production.up.railway.app/)
 
-## ✨ Key Features
+---
 
-- **Course-Specific AI Bots**: service_admins create and train bots on their course materials
-- **Real-Time Communication**: Instant messaging powered by Socket.IO
-- **Document Upload & Processing**: Support for PDF, DOCX, PPTX, and TXT files
-- **Vector Store Integration**: Semantic search using OpenAI embeddings
-- **Group Chat Management**: Organize discussions by course and topic
-- **Voice Interaction**: Speech-to-text for audio messages (coming soon)
-- **Role-Based Access**: Separate permissions for students and service_admins
+## Overview
 
-## 🛠️ Technology Stack
+Student support services at Ashesi University — Career Services, Academic Advising, ODIP, and more — are spread across emails, departmental pages, and in-person visits. CampusAid brings them all into one intelligent, centralized web platform.
 
-### Backend
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: MySQL
-- **Real-Time**: Socket.IO
-- **AI/ML**: OpenAI GPT-4 & Embeddings API
+The platform combines four core components:
 
-### Frontend
-- **Languages**: HTML5, CSS3, JavaScript
-- **Styling**: Custom CSS (responsive design)
-- **Real-Time**: Socket.IO Client
+- 🗂️ **Unified Service Directory** — discover all available student support services in one place
+- 🤖 **AI Conversational Assistant** — RAG-powered chatbot grounded in institutional documents for accurate, Ashesi-specific answers
+- 📅 **Appointment Management** — students book appointments; staff confirm or decline with reasons
+- 💬 **Real-Time Messaging** — live chat between students and service office staff via Socket.IO
 
-### Security & Tools
-- Helmet.js for security headers
-- Express Rate Limiting
-- CORS protection
-- Session management
-- Input validation
+---
 
-## 📋 Prerequisites
+## Tech Stack
 
-- Node.js (v16+)
-- MySQL (v8.0+)
-- OpenAI API Key
-- Modern web browser
+| Layer | Technology |
+|---|---|
+| Backend | Node.js, Express.js |
+| Frontend | HTML5, CSS3, Vanilla JavaScript |
+| Database | MySQL |
+| Real-Time | Socket.IO |
+| AI / RAG | OpenAI GPT API + Embeddings |
+| Email | Nodemailer |
+| Auth | Session-based + bcrypt + OTP |
+| Deployment | Railway |
 
-## 🚀 Quick Start
+---
 
-1. **Clone the repository**
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) v18+
+- [MySQL](https://dev.mysql.com/downloads/) v8.0+
+- An [OpenAI API Key](https://platform.openai.com/api-keys)
+- Git
+
+---
+
+## Getting Started
+
+### 1. Clone the repository
+
 ```bash
-git clone <repository-url>
-cd cobot-project
+git clone https://github.com/Isabella1025/campus-aid.git
+cd campus-aid
 ```
 
-2. **Install dependencies**
+### 2. Install dependencies
+
 ```bash
 npm install
 ```
 
-3. **Set up environment variables**
+### 3. Set up environment variables
+
 ```bash
 cp .env.example .env
-# Edit .env with your credentials
 ```
 
-4. **Create database**
-```bash
-mysql -u root -p < database/migrations/initial_schema.sql
+Open `.env` and fill in your values:
+
+```env
+PORT=3000
+
+DB_HOST=localhost
+DB_USER=your_mysql_username
+DB_PASSWORD=your_mysql_password
+DB_NAME=campusaid
+
+OPENAI_API_KEY=your_openai_api_key
+
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_email_app_password
+
+SESSION_SECRET=your_secret_key
 ```
 
-5. **Start the server**
-```bash
-npm run dev
-```
-
-6. **Access the application**
-```
-window.location.origin
-```
-
-For detailed setup instructions, see [SETUP.md](SETUP.md)
-
-## 📁 Project Structure
-
-```
-cobot-project/
-├── backend/              # Server-side code
-│   ├── config/          # Database & API configuration
-│   ├── routes/          # API endpoints
-│   ├── services/        # Business logic
-│   ├── sockets/         # Socket.IO handlers
-│   ├── middleware/      # Authentication & validation
-│   └── models/          # Data models
-├── frontend/            # Client-side code
-│   └── public/          # Static files (HTML, CSS, JS)
-├── database/            # SQL migrations & seeds
-├── uploads/             # User-uploaded files
-└── logs/                # Application logs
-```
-
-## 🎓 Academic Context
-
-This project is part of a capstone research study investigating how personalized AI bots can improve collaboration between students and service_admins in higher education. The research addresses:
-
-1. How personalized AI bots enhance academic cooperation
-2. Impact of real-time communication on student engagement
-3. Performance and usability trade-offs of AI-based chat systems
-4. User perception of course-specific bot utility and trustworthiness
-
-## 📅 Development Timeline
-
-- **Week 1**: Foundation & Core Infrastructure
-- **Week 2**: Real-Time Chat & File Management
-- **Week 3**: AI Intelligence & Vector Stores
-- **Week 4**: Polish, Testing & Documentation
-
-Current Status: **Week 1 - Foundation Complete** ✓
-
-## 🔒 Security Features
-
-- Session-based authentication
-- Role-based access control
-- Input validation and sanitization
-- Rate limiting on API endpoints
-- Secure file upload validation
-- HTTPS ready for production
-
-## 🧪 Testing
+### 4. Set up the database
 
 ```bash
-# Run tests
-npm test
+# Create the database
+mysql -u root -p -e "CREATE DATABASE campusaid;"
 
-# Run in development mode with auto-reload
-npm run dev
+# Run the schema
+mysql -u root -p campusaid < database/schema.sql
+
+# (Optional) Seed with sample data
+mysql -u root -p campusaid < database/seed.sql
 ```
 
-## 📖 Documentation
+### 5. Start the server
 
-- [Setup Guide](SETUP.md) - Detailed installation instructions
-- [API Documentation](docs/API.md) - Coming soon
-- [User Guide](docs/USER_GUIDE.md) - Coming soon
+```bash
+npm start
+```
 
-## 🤝 Contributing
-
-This is an academic capstone project. While contributions are not currently accepted, feedback and suggestions are welcome.
-
-## 📄 License
-
-This project is developed as part of an academic capstone at Ashesi University.
-
-## 📧 Contact
-
-**Isabella Tsikata**  
-Email: isabella.tsikata@ashesi.edu.gh
-
-**Supervisor: Dennis Owusu**  
-Ashesi University
-
-## 🙏 Acknowledgments
-
-- Ashesi University for providing resources and support
-- OpenAI for GPT-4 and Embeddings API
-- Socket.IO community for real-time communication tools
+Visit **http://localhost:3000** in your browser.
 
 ---
 
-**Note**: This project is currently in active development as part of a capstone research study.
+## Project Structure
+
+```
+campus-aid/
+├── backend/
+│   ├── app.js                    # Express app config & middleware
+│   ├── server.js                 # HTTP server & Socket.IO init
+│   ├── middleware/
+│   │   └── permission.middleware.js
+│   ├── models/
+│   │   ├── Service.js
+│   │   └── Appointment.js
+│   ├── routes/
+│   │   ├── auth.router.js
+│   │   ├── service.router.js
+│   │   ├── appointment.router.js
+│   │   ├── channel.router.js
+│   │   ├── bot.router.js
+│   │   ├── file.router.js
+│   │   ├── notifications.router.js
+│   │   ├── user.router.js
+│   │   └── analytics.router.js
+│   ├── services/
+│   │   ├── AuthService.js
+│   │   ├── EmailService.js
+│   │   ├── BotService.js
+│   │   ├── DocumentService.js
+│   │   └── VectorStoreService.js
+│   └── sockets/
+│       └── socketHandler.js
+├── frontend/
+│   └── public/
+│       ├── index.html            # Login / Signup / OTP
+│       ├── services.html         # Student service directory
+│       ├── chat.html             # Real-time messaging
+│       ├── appointments.html     # Appointment booking
+│       ├── profile.html
+│       ├── staff-dashboard.html
+│       ├── admin.html            # Admin: docs, bots, analytics
+│       ├── analytics.html
+│       └── ...
+├── database/
+│   ├── schema.sql                # Full schema (15 tables)
+│   └── seed.sql                  # Sample data
+├── tests/
+│   └── integration/
+├── .env.example
+├── docker-compose.yml
+└── package.json
+```
+
+---
+
+## User Roles
+
+| Role | Capabilities |
+|---|---|
+| **Student** | Browse services, chat with AI, book appointments, message staff |
+| **Staff** | Manage appointments, respond to student messages |
+| **Admin** | Upload knowledge base documents, manage services, view analytics |
+
+---
+
+## How the AI Works
+
+CampusAid uses **Retrieval-Augmented Generation (RAG)**. Each service office has its own knowledge base. When an admin uploads documents (PDFs, guides, FAQs), the system:
+
+1. Extracts the text content
+2. Generates semantic embeddings using OpenAI's embedding model
+3. Stores them in a per-service vector store
+
+When a student asks a question, the system retrieves the most relevant document excerpts and passes them to GPT to generate an accurate, Ashesi-specific answer — reducing hallucination and keeping responses grounded in real institutional information.
+
+---
+
+## Testing
+
+```bash
+npm test
+```
+
+Integration tests are located in `tests/integration/`.
+
+---
+
+## Deployment
+
+The app is deployed on [Railway](https://railway.app/).  
+Live URL: [https://campus-aid-production.up.railway.app/](https://campus-aid-production.up.railway.app/)
+
+To deploy your own instance, ensure all environment variables are configured in your Railway (or other platform) dashboard.
+
+---
+
+## Acknowledgements
+
+- Ashesi University for institutional support
+- OpenAI for the GPT and Embeddings APIs
+- Socket.IO for real-time communication tooling
+
+---
+
+## Contact
+
+**Isabella Tsikata**  
+📧 isabella.tsikata@ashesi.edu.gh  
+Ashesi University, Class of 2026
