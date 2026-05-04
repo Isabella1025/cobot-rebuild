@@ -1,4 +1,4 @@
-# CampusAid 🎓
+# CampusAid 
 ### A Centralized Intelligent Platform for Navigating Student Support Services
 
 > Built for Ashesi University | Applied Project | B.Sc. Computer Science
@@ -8,7 +8,7 @@
 **Institution:** Ashesi University  
 **Year:** 2026
 
-🌐 **Live App:** [https://campus-aid-production.up.railway.app/](https://campus-aid-production.up.railway.app/)
+ **Live App:** [https://campus-aid-production.up.railway.app/](https://campus-aid-production.up.railway.app/)
 
 ---
 
@@ -18,10 +18,10 @@ Student support services at Ashesi University — Career Services, Academic Advi
 
 The platform combines four core components:
 
-- 🗂️ **Unified Service Directory** — discover all available student support services in one place
-- 🤖 **AI Conversational Assistant** — RAG-powered chatbot grounded in institutional documents for accurate, Ashesi-specific answers
-- 📅 **Appointment Management** — students book appointments; staff confirm or decline with reasons
-- 💬 **Real-Time Messaging** — live chat between students and service office staff via Socket.IO
+-  **Unified Service Directory** — discover all available student support services in one place
+-  **AI Conversational Assistant** — RAG-powered chatbot grounded in institutional documents for accurate, Ashesi-specific answers
+-  **Appointment Management** — students book appointments; staff confirm or decline with reasons
+-  **Real-Time Messaging** — live chat between students and service office staff via Socket.IO
 
 ---
 
@@ -216,5 +216,5 @@ To deploy your own instance, ensure all environment variables are configured in 
 ## Contact
 
 **Isabella Tsikata**  
-📧 isabella.tsikata@ashesi.edu.gh  
+isabella.tsikata@ashesi.edu.gh  
 Ashesi University, Class of 2026
